@@ -82,5 +82,14 @@ async function bootstrap() {
     await seedSuperAdmin(app);
     await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+bootstrap().catch(err => {
+    try {
+        fs.writeFileSync(path.join(__dirname, '..', '..', 'crash.log'), `Crash Date: ${new Date().toISOString()}\nError: ${err?.stack || err?.message || String(err)}\n`);
+    }
+    catch (e) {
+    }
+    process.exit(1);
+});
 //# sourceMappingURL=main.js.map

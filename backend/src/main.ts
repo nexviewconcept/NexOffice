@@ -55,4 +55,17 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+import * as fs from 'fs';
+import * as path from 'path';
+
+bootstrap().catch(err => {
+  try {
+    fs.writeFileSync(
+      path.join(__dirname, '..', '..', 'crash.log'),
+      `Crash Date: ${new Date().toISOString()}\nError: ${err?.stack || err?.message || String(err)}\n`
+    );
+  } catch (e) {
+    // Ignore log write failure
+  }
+  process.exit(1);
+});
