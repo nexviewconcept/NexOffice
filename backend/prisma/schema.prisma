@@ -1,0 +1,338 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User & Authentication
+model User {
+  id                String         @id @default(uuid())
+  email             String         @unique
+  notificationEmail String?
+  passwordHash      String
+  status            String         @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  staffProfile  StaffProfile?
+  roles         UserRole[]
+  tickets       Ticket[]
+  ticketMessages TicketMessage[]
+  auditLogs     AuditLog[]
+  readNotifications NotificationReadStatus[]
+  serviceLogs   ServiceLog[]
+}
+
+// RBAC
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique // e.g., SUPER_ADMIN, DIRECTOR, OPERATOR
+  description String?
+  
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  action      String           @unique // e.g., users.create, invoices.view
+  description String?
+  
+  roles       RolePermission[]
+}
+
+model UserRole {
+  userId      String
+  roleId      String
+  
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+// Profiles
+model StaffProfile {
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  firstName      String
+  middleName     String?
+  lastName       String
+  staffIdNumber  String?   @unique
+  department     String?
+  designation    String?
+  photoUrl       String?
+  dateJoined     DateTime?
+  
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  certificates   Certificate[]
+}
+
+// Clients & Finance
+model Client {
+  id        String    @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  type      String?   // INDIVIDUAL or COMPANY
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  invoices  Invoice[]
+}
+
+model Invoice {
+  id            String         @id @default(uuid())
+  clientId      String
+  invoiceNumber String         @unique
+  status        String         @default("DRAFT") // DRAFT, SENT, PAID...
+  issueDate     DateTime       @default(now())
+  dueDate       DateTime?
+  subtotal      Float
+  total         Float
+  notes         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  client        Client         @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  items         InvoiceItem[]
+  receipts      Receipt[]
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  description String
+  quantity    Int      @default(1)
+  unit        String?
+  unitPrice   Float
+  total       Float
+
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Receipt {
+  id            String         @id @default(uuid())
+  invoiceId     String?
+  receiptNumber String         @unique
+  amount        Float
+  paymentMethod String
+  paymentDate   DateTime       @default(now())
+  notes         String?
+  createdAt     DateTime       @default(now())
+  
+  invoice       Invoice?       @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+}
+
+// Certificates
+model Certificate {
+  id                String       @id @default(uuid())
+  staffId           String?
+  certificateNumber String       @unique
+  recipientName     String
+  courseName        String
+  skillsLearned     String?
+  startDate         DateTime
+  endDate           DateTime?
+  issueDate         DateTime
+  status            String       @default("VALID") // VALID, REVOKED
+  
+  staff             StaffProfile? @relation(fields: [staffId], references: [id], onDelete: SetNull)
+}
+
+// File Management
+model File {
+  id           String   @id @default(uuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  folder       String   @default("General")
+  description  String?
+  sharedWith   String?  @default("ALL") // "ALL", "SELF", or comma-separated user emails/IDs
+  uploadedById String?
+  createdAt    DateTime @default(now())
+}
+
+// Finance & Expenses
+model ExpenseCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  
+  expenses    Expense[]
+}
+
+model Expense {
+  id            String   @id @default(uuid())
+  categoryId    String
+  amount        Float
+  description   String
+  paymentMethod String
+  reference     String?
+  expenseDate   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  category      ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+}
+
+// Inventory
+model InventoryItem {
+  id            String   @id @default(uuid())
+  name          String
+  sku           String   @unique
+  category      String
+  quantity      Int      @default(0)
+  minQuantity   Int      @default(0)
+  location      String?
+  condition     String?
+  purchaseCost  Float?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  transactions  InventoryTransaction[]
+}
+
+model InventoryTransaction {
+  id            String        @id @default(uuid())
+  itemId        String
+  type          String        // IN, OUT, ADJUSTMENT
+  quantity      Int
+  notes         String?
+  createdAt     DateTime      @default(now())
+  
+  item          InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+// Logs
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  action      String
+  entity      String
+  entityId    String?
+  ipAddress   String?
+  timestamp   DateTime @default(now())
+  
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+// Support Ticketing System
+model Ticket {
+  id          String   @id @default(uuid())
+  ticketNumber String  @unique // e.g. TKT-1024
+  subject     String
+  status      String   @default("OPEN") // OPEN, IN_PROGRESS, CLOSED
+  priority    String   @default("NORMAL") // LOW, NORMAL, HIGH, URGENT
+  category    String   @default("GENERAL") // GENERAL, TECHNICAL, BILLING, HR
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages    TicketMessage[]
+}
+
+model TicketMessage {
+  id        String   @id @default(uuid())
+  ticketId  String
+  userId    String
+  message   String
+  isStaff   Boolean  @default(false) // True if sent by admin/support staff
+  createdAt DateTime @default(now())
+
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EmailLog {
+  id          String   @id @default(uuid())
+  recipient   String
+  subject     String
+  template    String?
+  status      String   // SENT, FAILED, RETRY
+  sentAt      DateTime @default(now())
+}
+
+// Announcements & Notifications
+model Announcement {
+  id            String    @id @default(uuid())
+  title         String
+  message       String
+  recurrence    String    @default("ONCE") // ONCE, DAILY, TWICE_DAILY, WEEKLY
+  status        String    @default("ACTIVE") // ACTIVE, PAUSED, STOPPED, EXPIRED
+  channel       String    @default("DASHBOARD") // DASHBOARD, EMAIL, BOTH
+  audience      String    @default("ALL") // ALL, DIRECTORS, OPERATORS, STAFF
+  repeatEmail   Boolean   @default(false)
+  startDate     DateTime  @default(now())
+  expiryDate    DateTime?
+  createdBy     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  occurrences   AnnouncementOccurrence[]
+}
+
+model AnnouncementOccurrence {
+  id             String    @id @default(uuid())
+  announcementId String
+  firedAt        DateTime  @default(now())
+  
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+  reads          NotificationReadStatus[]
+}
+
+model NotificationReadStatus {
+  id             String    @id @default(uuid())
+  occurrenceId   String
+  userId         String
+  readAt         DateTime  @default(now())
+  
+  occurrence     AnnouncementOccurrence @relation(fields: [occurrenceId], references: [id], onDelete: Cascade)
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([occurrenceId, userId])
+}
+
+// System Settings
+model SystemSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+// NIN / BVN / Manageable Services Log
+model ServiceLog {
+  id            String   @id @default(uuid())
+  serviceType   String   // NIN, BVN, CAC, PLASTIC_ID, OTHER
+  customerName  String
+  customerPhone String?
+  amount        Float    @default(0)
+  paymentStatus String   @default("COMPLETE") // COMPLETE, PENDING, PARTIAL
+  paymentDate   DateTime @default(now())
+  deviceUsed    String?  // e.g. 'Laptop 1', 'Biometric Scanner A'
+  performedById String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  performedBy   User?    @relation(fields: [performedById], references: [id], onDelete: SetNull)
+}
