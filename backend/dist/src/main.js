@@ -38,12 +38,12 @@ const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app.module");
 const path_1 = require("path");
 const prisma_service_1 = require("./prisma/prisma.service");
-const argon2 = __importStar(require("argon2"));
+const bcrypt = __importStar(require("bcryptjs"));
 async function seedSuperAdmin(app) {
     try {
         const prisma = app.get(prisma_service_1.PrismaService);
         const adminEmail = 'admin@nexviewconcept.com.ng';
-        const passwordHash = await argon2.hash('@Nx.cl17576');
+        const passwordHash = await bcrypt.hash('@Nx.cl17576', 10);
         const superAdminRole = await prisma.role.upsert({
             where: { name: 'SUPER_ADMIN' },
             update: {},

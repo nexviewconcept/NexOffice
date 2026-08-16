@@ -4,13 +4,13 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { PrismaService } from './prisma/prisma.service';
-import * as argon2 from 'argon2';
+import * as bcrypt from 'bcryptjs';
 
 async function seedSuperAdmin(app: NestExpressApplication) {
   try {
     const prisma = app.get(PrismaService);
     const adminEmail = 'admin@nexviewconcept.com.ng';
-    const passwordHash = await argon2.hash('@Nx.cl17576');
+    const passwordHash = await bcrypt.hash('@Nx.cl17576', 10);
 
     const superAdminRole = await prisma.role.upsert({
       where: { name: 'SUPER_ADMIN' },
