@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -24,11 +25,15 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { ServiceLogsModule } from './service-logs/service-logs.module';
+import { StudentsModule } from './students/students.module';
+import { CoursesModule } from './courses/courses.module';
+import { CorporateModule } from './corporate/corporate.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    PrismaModule, AuthModule, UsersModule, StaffProfilesModule, DocumentsModule, ClientsModule, InvoicesModule, ReceiptsModule, InventoryModule, CertificatesModule, NotificationsModule, FilesModule, PublicVerificationModule, FinanceModule, EmailsModule, SettingsModule, AuditModule, BackupsModule, DashboardModule, PermissionsModule, TicketsModule, ServiceLogsModule
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
+    PrismaModule, AuthModule, UsersModule, StaffProfilesModule, DocumentsModule, ClientsModule, InvoicesModule, ReceiptsModule, InventoryModule, CertificatesModule, NotificationsModule, FilesModule, PublicVerificationModule, FinanceModule, EmailsModule, SettingsModule, AuditModule, BackupsModule, DashboardModule, PermissionsModule, TicketsModule, ServiceLogsModule, StudentsModule, CoursesModule, CorporateModule
   ],
   controllers: [AppController],
   providers: [AppService],

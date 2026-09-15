@@ -13,12 +13,15 @@ exports.ReceiptsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const documents_service_1 = require("../documents/documents.service");
+const emails_service_1 = require("../emails/emails.service");
 let ReceiptsService = class ReceiptsService {
     prisma;
     documents;
-    constructor(prisma, documents) {
+    emails;
+    constructor(prisma, documents, emails) {
         this.prisma = prisma;
         this.documents = documents;
+        this.emails = emails;
     }
     async createReceipt(data) {
         const { invoiceId, amount, paymentMethod, notes } = data;
@@ -173,6 +176,23 @@ let ReceiptsService = class ReceiptsService {
     `;
         return this.documents.generatePdf(html);
     }
+    async sendReceiptEmail(id) {
+        const receipt = await this.prisma.receipt.findUnique({
+            where: { id },
+            include: { invoice: { include: { client: true } } }
+        });
+        if (!receipt || !receipt.invoice || !receipt.invoice.client) {
+            throw new common_1.NotFoundException('Receipt or Client not found');
+        }
+        if (!receipt.invoice.client.email) {
+            throw new common_1.BadRequestException('Client does not have an email address');
+        }
+        const pdfBuffer = await this.generateReceiptPdf(id);
+        const subject = `Receipt ${receipt.receiptNumber} from Nexview Concept Limited`;
+        const body = `Dear ${receipt.invoice.client.name},\n\nPlease find attached your payment receipt (${receipt.receiptNumber}) for the amount of ₦${receipt.amount.toLocaleString()}.\n\nThank you for your business.`;
+        await this.emails.sendEmail(receipt.invoice.client.email, subject, undefined, undefined, undefined, body, pdfBuffer, `${receipt.receiptNumber}.pdf`);
+        return { message: 'Receipt queued for emailing successfully' };
+    }
     async deleteReceipt(id) {
         return this.prisma.receipt.delete({ where: { id } });
     }
@@ -180,6 +200,6 @@ let ReceiptsService = class ReceiptsService {
 exports.ReceiptsService = ReceiptsService;
 exports.ReceiptsService = ReceiptsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService, documents_service_1.DocumentsService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService, documents_service_1.DocumentsService, emails_service_1.EmailsService])
 ], ReceiptsService);
 //# sourceMappingURL=receipts.service.js.map

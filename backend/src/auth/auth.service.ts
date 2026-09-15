@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcryptjs';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class AuthService {
@@ -26,18 +26,18 @@ export class AuthService {
       throw new UnauthorizedException('Account is not active');
     }
 
-    const isPasswordValid = await bcrypt.compare(passwordPlain, user.passwordHash);
-    
+    const isPasswordValid = await argon2.verify(user.passwordHash, passwordPlain);
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { 
-      email: user.email, 
+    const payload = {
+      email: user.email,
       sub: user.id,
       roles: user.roles.map(r => r.role.name)
     };
-    
+
     return {
       access_token: this.jwtService.sign(payload),
       user: {

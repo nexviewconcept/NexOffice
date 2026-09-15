@@ -1,9 +1,11 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { DocumentsService } from '../documents/documents.service';
+import { EmailsService } from '../emails/emails.service';
 export declare class InvoicesService {
     private prisma;
     private documents;
-    constructor(prisma: PrismaService, documents: DocumentsService);
+    private emails;
+    constructor(prisma: PrismaService, documents: DocumentsService, emails: EmailsService);
     createInvoice(data: any): Promise<{
         client: {
             id: string;
@@ -30,12 +32,12 @@ export declare class InvoicesService {
         createdAt: Date;
         updatedAt: Date;
         clientId: string;
+        notes: string | null;
+        dueDate: Date | null;
         invoiceNumber: string;
         issueDate: Date;
-        dueDate: Date | null;
         subtotal: number;
         total: number;
-        notes: string | null;
     }>;
     findAll(): Promise<({
         client: {
@@ -54,12 +56,12 @@ export declare class InvoicesService {
         createdAt: Date;
         updatedAt: Date;
         clientId: string;
+        notes: string | null;
+        dueDate: Date | null;
         invoiceNumber: string;
         issueDate: Date;
-        dueDate: Date | null;
         subtotal: number;
         total: number;
-        notes: string | null;
     })[]>;
     findOne(id: string): Promise<{
         client: {
@@ -86,9 +88,9 @@ export declare class InvoicesService {
             createdAt: Date;
             notes: string | null;
             invoiceId: string | null;
-            receiptNumber: string;
             amount: number;
             paymentMethod: string;
+            receiptNumber: string;
             paymentDate: Date;
         }[];
     } & {
@@ -97,25 +99,28 @@ export declare class InvoicesService {
         createdAt: Date;
         updatedAt: Date;
         clientId: string;
+        notes: string | null;
+        dueDate: Date | null;
         invoiceNumber: string;
         issueDate: Date;
-        dueDate: Date | null;
         subtotal: number;
         total: number;
-        notes: string | null;
     }>;
     generateInvoicePdf(id: string): Promise<Buffer<ArrayBufferLike>>;
+    sendInvoiceEmail(id: string): Promise<{
+        message: string;
+    }>;
     deleteInvoice(id: string): Promise<{
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         clientId: string;
+        notes: string | null;
+        dueDate: Date | null;
         invoiceNumber: string;
         issueDate: Date;
-        dueDate: Date | null;
         subtotal: number;
         total: number;
-        notes: string | null;
     }>;
 }

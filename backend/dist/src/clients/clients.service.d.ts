@@ -29,12 +29,12 @@ export declare class ClientsService {
             createdAt: Date;
             updatedAt: Date;
             clientId: string;
+            notes: string | null;
+            dueDate: Date | null;
             invoiceNumber: string;
             issueDate: Date;
-            dueDate: Date | null;
             subtotal: number;
             total: number;
-            notes: string | null;
         }[];
     } & {
         id: string;

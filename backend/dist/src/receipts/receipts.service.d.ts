@@ -1,17 +1,19 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { DocumentsService } from '../documents/documents.service';
+import { EmailsService } from '../emails/emails.service';
 export declare class ReceiptsService {
     private prisma;
     private documents;
-    constructor(prisma: PrismaService, documents: DocumentsService);
+    private emails;
+    constructor(prisma: PrismaService, documents: DocumentsService, emails: EmailsService);
     createReceipt(data: any): Promise<{
         id: string;
         createdAt: Date;
         notes: string | null;
         invoiceId: string | null;
-        receiptNumber: string;
         amount: number;
         paymentMethod: string;
+        receiptNumber: string;
         paymentDate: Date;
     }>;
     findAll(): Promise<({
@@ -32,32 +34,35 @@ export declare class ReceiptsService {
             createdAt: Date;
             updatedAt: Date;
             clientId: string;
+            notes: string | null;
+            dueDate: Date | null;
             invoiceNumber: string;
             issueDate: Date;
-            dueDate: Date | null;
             subtotal: number;
             total: number;
-            notes: string | null;
         }) | null;
     } & {
         id: string;
         createdAt: Date;
         notes: string | null;
         invoiceId: string | null;
-        receiptNumber: string;
         amount: number;
         paymentMethod: string;
+        receiptNumber: string;
         paymentDate: Date;
     })[]>;
     generateReceiptPdf(id: string): Promise<Buffer<ArrayBufferLike>>;
+    sendReceiptEmail(id: string): Promise<{
+        message: string;
+    }>;
     deleteReceipt(id: string): Promise<{
         id: string;
         createdAt: Date;
         notes: string | null;
         invoiceId: string | null;
-        receiptNumber: string;
         amount: number;
         paymentMethod: string;
+        receiptNumber: string;
         paymentDate: Date;
     }>;
 }

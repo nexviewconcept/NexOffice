@@ -28,7 +28,7 @@ export class EmailsService {
     });
   }
 
-  async sendEmail(recipient: string, subject: string, template?: string, attachmentPath?: string, senderEmail?: string, bodyText?: string) {
+  async sendEmail(recipient: string, subject: string, template?: string, attachmentPath?: string, senderEmail?: string, bodyText?: string, attachmentBuffer?: Buffer, attachmentFilename?: string) {
     this.logger.log(`Queueing email to ${recipient} (Subject: ${subject})`);
     
     const log = await this.prisma.emailLog.create({
@@ -43,8 +43,20 @@ export class EmailsService {
     setTimeout(async () => {
       try {
         const smtpUser = process.env.SMTP_USER;
+        let fromName = process.env.SMTP_FROM_NAME || 'Nexview Concept Limited';
+        
+        if (senderEmail) {
+          if (senderEmail.includes('md@')) {
+            fromName = 'Nexview Admin';
+          } else if (senderEmail.includes('support@')) {
+            fromName = 'Nexview Support';
+          } else if (senderEmail.includes('info@')) {
+            fromName = 'Nexview Concept Limited';
+          }
+        }
+        
         const mailOptions: any = {
-          from: `"${process.env.SMTP_FROM_NAME || 'NexOffice'}" <${smtpUser}>`,
+          from: `"${fromName}" <${smtpUser}>`,
           replyTo: senderEmail || smtpUser,
           to: recipient,
           subject: subject,
@@ -54,6 +66,11 @@ export class EmailsService {
         if (attachmentPath) {
           mailOptions.attachments = [{
             path: attachmentPath
+          }];
+        } else if (attachmentBuffer && attachmentFilename) {
+          mailOptions.attachments = [{
+            filename: attachmentFilename,
+            content: attachmentBuffer
           }];
         }
 
@@ -94,8 +111,12 @@ export class EmailsService {
     setTimeout(async () => {
       try {
         const smtpUser = process.env.SMTP_USER;
+        let fromName = process.env.SMTP_FROM_NAME || 'Nexview Concept Limited';
+        
+        // Try to infer from log subject or senderEmail if stored (it's not stored, so we fallback to default)
+        
         const mailOptions: any = {
-          from: `"${process.env.SMTP_FROM_NAME || 'NexOffice'}" <${smtpUser}>`,
+          from: `"${fromName}" <${smtpUser}>`,
           to: log.recipient,
           subject: log.subject,
           html: log.template || `<p>${log.subject}</p>`

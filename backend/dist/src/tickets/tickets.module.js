@@ -18,7 +18,8 @@ exports.TicketsModule = TicketsModule = __decorate([
     (0, common_1.Module)({
         imports: [emails_module_1.EmailsModule],
         providers: [tickets_service_1.TicketsService],
-        controllers: [tickets_controller_1.TicketsController]
+        controllers: [tickets_controller_1.TicketsController],
+        exports: [tickets_service_1.TicketsService]
     })
 ], TicketsModule);
 //# sourceMappingURL=tickets.module.js.map

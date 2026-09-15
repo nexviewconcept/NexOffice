@@ -12,6 +12,7 @@ export declare class DocumentsService {
     generatePdf(htmlContent: string, options?: puppeteer.PDFOptions): Promise<Buffer>;
     generateQrCode(text: string): Promise<string>;
     generateStaffId(staffId: string): Promise<Buffer>;
+    generateStudentIdCard(studentId: string): Promise<Buffer>;
     verifyStaff(staffId: string): Promise<{
         isValid: boolean;
         name: string;

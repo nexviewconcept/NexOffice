@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailsController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const emails_service_1 = require("./emails.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
@@ -26,8 +27,8 @@ let EmailsController = class EmailsController {
     getLogs() {
         return this.emailsService.getLogs();
     }
-    sendCustomEmail(data) {
-        return this.emailsService.sendEmail(data.recipient, data.subject, data.template || 'Custom Email', undefined, data.senderEmail, data.body);
+    async sendCustomEmail(data, file) {
+        return this.emailsService.sendEmail(data.recipient, data.subject, data.template || 'Custom Email', undefined, data.senderEmail, data.body, file?.buffer, file?.originalname);
     }
     sendTestEmail(data) {
         return this.emailsService.sendEmail(data.recipient, data.subject, data.template || 'Test Email', undefined, data.senderEmail, data.body);
@@ -47,10 +48,12 @@ __decorate([
 __decorate([
     (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR', 'STAFF'),
     (0, common_1.Post)('send'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('attachment')),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
 ], EmailsController.prototype, "sendCustomEmail", null);
 __decorate([
     (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),

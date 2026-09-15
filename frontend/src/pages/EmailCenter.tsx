@@ -18,6 +18,7 @@ export default function EmailCenter() {
     body: ''
   });
   const [sending, setSending] = useState(false);
+  const [attachment, setAttachment] = useState<File | null>(null);
 
   const getSenderOptions = () => {
     const userEmail = user?.email || 'user@nexviewconcept.com.ng';
@@ -69,9 +70,21 @@ export default function EmailCenter() {
     e.preventDefault();
     setSending(true);
     try {
-      await api.post('/emails/send', emailData);
+      const formData = new FormData();
+      formData.append('senderEmail', emailData.senderEmail);
+      formData.append('recipient', emailData.recipient);
+      formData.append('subject', emailData.subject);
+      formData.append('body', emailData.body);
+      if (attachment) {
+        formData.append('attachment', attachment);
+      }
+
+      await api.post('/emails/send', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       setSendModal(false);
       setEmailData({ senderEmail: 'info@nexviewconcept.com.ng', recipient: '', subject: '', body: '' });
+      setAttachment(null);
       fetchLogs();
     } catch (err) {
       console.error(err);
@@ -239,6 +252,10 @@ export default function EmailCenter() {
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message Body</label>
             <textarea required rows={5} value={emailData.body} onChange={e => setEmailData({...emailData, body: e.target.value})} className="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Type your email content here or choose a template above..." />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Attach File (PDF, etc)</label>
+            <input type="file" onChange={e => setAttachment(e.target.files ? e.target.files[0] : null)} className="w-full text-sm dark:text-gray-300" />
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
             <button type="button" onClick={() => setSendModal(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-950 text-sm">Cancel</button>

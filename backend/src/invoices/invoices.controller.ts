@@ -40,6 +40,11 @@ export class InvoicesController {
     res.end(pdfBuffer);
   }
 
+  @Post(':id/send-email')
+  sendEmail(@Param('id') id: string) {
+    return this.invoicesService.sendInvoiceEmail(id);
+  }
+
   @Roles('SUPER_ADMIN')
   @Delete(':id')
   deleteInvoice(@Param('id') id: string) {

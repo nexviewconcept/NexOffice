@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Download, CheckCircle, Trash2, DollarSign, Eye } from 'lucide-react';
+import { Plus, Download, CheckCircle, Trash2, DollarSign, Eye, Mail } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import api from '../lib/api';
 import { Modal } from '../components/ui/Modal';
@@ -82,7 +82,16 @@ export default function Invoices() {
     }
   };
 
-      const handleDownload = async (id: string, action: 'download' | 'preview' = 'download') => {
+      const handleSendEmail = async (id: string) => {
+      try {
+        await api.post(`/invoices/${id}/send-email`);
+        alert('Invoice sent to client successfully!');
+      } catch (err: any) {
+        alert(err.response?.data?.message || 'Failed to send email');
+      }
+    };
+
+    const handleDownload = async (id: string, action: 'download' | 'preview' = 'download') => {
     try {
       if (action === 'preview') {
         setPreviewLoading(true);
@@ -209,6 +218,12 @@ export default function Invoices() {
                       className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition" title="Preview PDF"
                     >
                       <Eye className="w-5 h-5" />
+                    </button>
+                    <button 
+                      onClick={() => handleSendEmail(inv.id)}
+                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Send Email to Client"
+                    >
+                      <Mail className="w-5 h-5" />
                     </button>
                     <button 
                       onClick={() => handleDownload(inv.id, 'download')}

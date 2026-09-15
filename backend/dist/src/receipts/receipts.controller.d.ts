@@ -8,9 +8,9 @@ export declare class ReceiptsController {
         createdAt: Date;
         notes: string | null;
         invoiceId: string | null;
-        receiptNumber: string;
         amount: number;
         paymentMethod: string;
+        receiptNumber: string;
         paymentDate: Date;
     }>;
     findAll(): Promise<({
@@ -31,32 +31,35 @@ export declare class ReceiptsController {
             createdAt: Date;
             updatedAt: Date;
             clientId: string;
+            notes: string | null;
+            dueDate: Date | null;
             invoiceNumber: string;
             issueDate: Date;
-            dueDate: Date | null;
             subtotal: number;
             total: number;
-            notes: string | null;
         }) | null;
     } & {
         id: string;
         createdAt: Date;
         notes: string | null;
         invoiceId: string | null;
-        receiptNumber: string;
         amount: number;
         paymentMethod: string;
+        receiptNumber: string;
         paymentDate: Date;
     })[]>;
     downloadPdf(id: string, res: Response, action?: string): Promise<void>;
+    sendEmail(id: string): Promise<{
+        message: string;
+    }>;
     deleteReceipt(id: string): Promise<{
         id: string;
         createdAt: Date;
         notes: string | null;
         invoiceId: string | null;
-        receiptNumber: string;
         amount: number;
         paymentMethod: string;
+        receiptNumber: string;
         paymentDate: Date;
     }>;
 }

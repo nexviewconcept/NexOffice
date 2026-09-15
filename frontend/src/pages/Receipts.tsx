@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, Eye, FileText, Trash2, CheckCircle } from 'lucide-react';
+import { Download, Eye, FileText, Trash2, CheckCircle, Mail } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import api from '../lib/api';
 import { Modal } from '../components/ui/Modal';
@@ -26,6 +26,15 @@ export default function Receipts() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSendEmail = async (id: string) => {
+    try {
+      await api.post(`/receipts/${id}/send-email`);
+      alert('Receipt sent to client successfully!');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to send email');
     }
   };
 
@@ -112,6 +121,12 @@ export default function Receipts() {
                       className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition" title="Preview PDF"
                     >
                       <Eye className="w-5 h-5" />
+                    </button>
+                    <button 
+                      onClick={() => handleSendEmail(rec.id)}
+                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Send Email to Client"
+                    >
+                      <Mail className="w-5 h-5" />
                     </button>
                     <button 
                       onClick={() => handleDownload(rec.id, 'download')}

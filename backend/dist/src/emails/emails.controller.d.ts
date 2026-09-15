@@ -16,7 +16,7 @@ export declare class EmailsController {
         body?: string;
         senderEmail?: string;
         template?: string;
-    }): Promise<{
+    }, file?: Express.Multer.File): Promise<{
         message: string;
         logId: string;
     }>;

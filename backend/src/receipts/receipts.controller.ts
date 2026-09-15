@@ -34,6 +34,11 @@ export class ReceiptsController {
     res.end(pdfBuffer);
   }
 
+  @Post(':id/send-email')
+  sendEmail(@Param('id') id: string) {
+    return this.receiptsService.sendReceiptEmail(id);
+  }
+
   @Roles('SUPER_ADMIN')
   @Delete(':id')
   deleteReceipt(@Param('id') id: string) {

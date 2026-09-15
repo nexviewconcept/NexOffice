@@ -38,12 +38,12 @@ const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app.module");
 const path_1 = require("path");
 const prisma_service_1 = require("./prisma/prisma.service");
-const bcrypt = __importStar(require("bcryptjs"));
+const argon2 = __importStar(require("argon2"));
 async function seedSuperAdmin(app) {
     try {
         const prisma = app.get(prisma_service_1.PrismaService);
-        const adminEmail = 'admin@nexviewconcept.com.ng';
-        const passwordHash = await bcrypt.hash('@Nx.cl17576', 10);
+        const adminEmail = 'md@nexviewconcept.com.ng';
+        const passwordHash = await argon2.hash('@Aminu17576');
         const superAdminRole = await prisma.role.upsert({
             where: { name: 'SUPER_ADMIN' },
             update: {},
@@ -66,6 +66,11 @@ async function seedSuperAdmin(app) {
                     }
                 }
             },
+        });
+        await prisma.role.upsert({
+            where: { name: 'STUDENT' },
+            update: {},
+            create: { name: 'STUDENT', description: 'Student Portal Access' },
         });
         console.log('✅ Auto-seed Super Admin completed successfully');
     }

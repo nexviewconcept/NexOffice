@@ -59,21 +59,26 @@ export class DocumentsService {
   }
 
   async generatePdf(htmlContent: string, options: puppeteer.PDFOptions = {}): Promise<Buffer> {
+    let browser;
     try {
-      const browser = await puppeteer.launch({
+      browser = await puppeteer.launch({
         headless: true,
+        executablePath: 'D:\\NexPortal\\NexOffice\\chrome\\win64-152.0.7977.75\\chrome-win64\\chrome.exe',
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security']
       });
       const page = await browser.newPage();
-      await page.setContent(htmlContent, { waitUntil: 'load' });
+      await page.setContent(htmlContent, { waitUntil: 'domcontentloaded', timeout: 15000 });
       const pdfBuffer = await page.pdf({
         format: 'A4',
         printBackground: true,
         ...options,
       });
-      await browser.close();
       return Buffer.from(pdfBuffer);
     } catch (error) {
+      console.error('PDF Generation Error:', error);
       throw new InternalServerErrorException('Failed to generate PDF');
+    } finally {
+      if (browser) await browser.close();
     }
   }
 
@@ -95,40 +100,114 @@ export class DocumentsService {
       throw new NotFoundException('Staff not found');
     }
 
-    if (!staff.photoUrl) {
-      throw new BadRequestException('Cannot generate ID without a profile photo');
+    const PDFDocument = require('pdfkit');
+    
+    return new Promise<Buffer>(async (resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ size: [250, 400], margin: 0 }); // ID card size
+        const buffers: Buffer[] = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => resolve(Buffer.concat(buffers)));
+
+        // Draw header background
+        doc.rect(0, 0, 250, 50).fill('#E50914');
+        doc.fillColor('white').fontSize(14).font('Helvetica-Bold').text('NEXVIEW CONCEPT LIMITED', 0, 18, { align: 'center' });
+
+        // Photo
+        if (staff.photoUrl) {
+           const photoPath = path.join(process.cwd(), '..', staff.photoUrl);
+           if (fs.existsSync(photoPath)) {
+             doc.save();
+             doc.circle(125, 120, 50).clip();
+             doc.image(photoPath, 75, 70, { width: 100, height: 100 });
+             doc.restore();
+             // Add border
+             doc.circle(125, 120, 50).lineWidth(3).stroke('#E50914');
+           }
+        }
+
+        doc.moveDown(5);
+        // Name
+        doc.fillColor('#111827').fontSize(18).font('Helvetica-Bold').text(`${staff.firstName} ${staff.lastName}`, 0, 190, { align: 'center' });
+        
+        // Designation
+        doc.fillColor('#E50914').fontSize(12).text(staff.designation || 'Staff', 0, 215, { align: 'center' });
+
+        // Staff ID Number
+        doc.fillColor('#6B7280').fontSize(10).font('Helvetica').text(`ID: ${staff.staffIdNumber || 'N/A'}`, 0, 235, { align: 'center' });
+
+        // QR Code
+        const verificationUrl = `https://nexviewconcept.com.ng/verify/staff/${staff.id}`;
+        const qrCodeDataUrl = await this.generateQrCode(verificationUrl);
+        const qrBuffer = Buffer.from(qrCodeDataUrl.split(',')[1], 'base64');
+        doc.image(qrBuffer, 90, 300, { width: 70, height: 70 });
+
+        // Border around card
+        doc.rect(2, 2, 246, 396).lineWidth(4).stroke('#E50914');
+
+        doc.end();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async generateStudentIdCard(studentId: string): Promise<Buffer> {
+    const student = await this.prisma.studentProfile.findUnique({
+      where: { id: studentId }
+    });
+
+    if (!student) {
+      throw new NotFoundException('Student not found');
     }
 
-    const verificationUrl = `https://nexviewconcept.com.ng/verify/staff/${staff.id}`;
-    const qrCodeDataUrl = await this.generateQrCode(verificationUrl);
+    const PDFDocument = require('pdfkit');
+    
+    return new Promise<Buffer>(async (resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ size: [250, 400], margin: 0 }); // ID card size
+        const buffers: Buffer[] = [];
+        doc.on('data', buffers.push.bind(buffers));
+        doc.on('end', () => resolve(Buffer.concat(buffers)));
 
-    const html = `
-      <html>
-        <head>
-          <style>
-            body { font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f3f4f6; }
-            .id-card { width: 54mm; height: 86mm; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 16px; text-align: center; border-top: 8px solid #E50914; }
-            .photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 10px auto; border: 3px solid #E50914; display: block; }
-            .name { font-size: 16px; font-weight: bold; margin: 8px 0 4px; color: #111827; }
-            .designation { font-size: 12px; color: #4B5563; margin-bottom: 4px; }
-            .qr-code { width: 80px; height: 80px; margin: 10px auto 0; display: block; }
-            .company { font-size: 11px; font-weight: bold; color: #E50914; margin-top: 10px; }
-          </style>
-        </head>
-        <body>
-          <div class="id-card">
-            <div class="company">NEXVIEW CONCEPT LIMITED</div>
-            <img class="photo" src="http://localhost:3000${staff.photoUrl}" alt="Photo" />
-            <div class="name">${staff.firstName} ${staff.lastName}</div>
-            <div class="designation">${staff.designation || 'Staff'}</div>
-            <div class="designation">ID: ${staff.staffIdNumber || 'N/A'}</div>
-            <img class="qr-code" src="${qrCodeDataUrl}" alt="QR Code" />
-          </div>
-        </body>
-      </html>
-    `;
+        // Draw header background (Blue for students)
+        doc.rect(0, 0, 250, 50).fill('#0B3D91'); 
 
-    return this.generatePdf(html);
+        // Add Nexview text
+        doc.fillColor('white')
+           .fontSize(16)
+           .text('NEXVIEW CONCEPT', 0, 15, { align: 'center', stroke: false });
+        doc.fontSize(10)
+           .text('STUDENT ID CARD', 0, 32, { align: 'center' });
+
+        // Add photo placeholder
+        doc.rect(75, 70, 100, 100).lineWidth(2).stroke('#0B3D91');
+        doc.fillColor('#000').fontSize(14).text('PHOTO', 75, 110, { width: 100, align: 'center' });
+
+        // Add details
+        doc.fillColor('black').fontSize(14).font('Helvetica-Bold');
+        doc.text(`${student.firstName} ${student.lastName}`, 0, 190, { align: 'center' });
+        
+        doc.fontSize(10).font('Helvetica');
+        doc.text('ID Number:', 20, 230);
+        doc.font('Helvetica-Bold').text(student.studentIdNumber || 'N/A', 90, 230);
+        
+        doc.font('Helvetica').text('Phone:', 20, 250);
+        doc.font('Helvetica-Bold').text(student.phone || 'N/A', 90, 250);
+
+        const QRCode = require('qrcode');
+        const qrDataUrl = await QRCode.toDataURL(`https://nexviewconcept.com.ng/verify/student/${student.studentIdNumber}`);
+        doc.image(qrDataUrl, 85, 290, { width: 80 });
+
+        // Footer
+        doc.rect(0, 380, 250, 20).fill('#0B3D91');
+        doc.fillColor('white').fontSize(8).text('www.nexviewconcept.com.ng', 0, 385, { align: 'center' });
+
+        doc.end();
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
 
   async verifyStaff(staffId: string) {

@@ -46,7 +46,7 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const jwt_1 = require("@nestjs/jwt");
-const bcrypt = __importStar(require("bcryptjs"));
+const argon2 = __importStar(require("argon2"));
 let AuthService = class AuthService {
     prisma;
     jwtService;
@@ -67,7 +67,7 @@ let AuthService = class AuthService {
         if (user.status !== 'ACTIVE') {
             throw new common_1.UnauthorizedException('Account is not active');
         }
-        const isPasswordValid = await bcrypt.compare(passwordPlain, user.passwordHash);
+        const isPasswordValid = await argon2.verify(user.passwordHash, passwordPlain);
         if (!isPasswordValid) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }

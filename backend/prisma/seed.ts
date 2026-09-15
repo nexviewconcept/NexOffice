@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const passwordHash = await argon2.hash('@Nx.cl17576');
-  
+
   const superAdminRole = await prisma.role.upsert({
     where: { name: 'SUPER_ADMIN' },
     update: {},

@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Param, UseGuards, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Body, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { EmailsService } from './emails.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -17,8 +18,21 @@ export class EmailsController {
 
   @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR', 'STAFF')
   @Post('send')
-  sendCustomEmail(@Body() data: { recipient: string; subject: string; body?: string; senderEmail?: string; template?: string }) {
-    return this.emailsService.sendEmail(data.recipient, data.subject, data.template || 'Custom Email', undefined, data.senderEmail, data.body);
+  @UseInterceptors(FileInterceptor('attachment'))
+  async sendCustomEmail(
+    @Body() data: { recipient: string; subject: string; body?: string; senderEmail?: string; template?: string },
+    @UploadedFile() file?: Express.Multer.File
+  ) {
+    return this.emailsService.sendEmail(
+      data.recipient, 
+      data.subject, 
+      data.template || 'Custom Email', 
+      undefined, 
+      data.senderEmail, 
+      data.body,
+      file?.buffer,
+      file?.originalname
+    );
   }
 
   @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')

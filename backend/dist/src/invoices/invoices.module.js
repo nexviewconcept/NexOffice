@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const invoices_service_1 = require("./invoices.service");
 const invoices_controller_1 = require("./invoices.controller");
 const documents_module_1 = require("../documents/documents.module");
+const emails_module_1 = require("../emails/emails.module");
 let InvoicesModule = class InvoicesModule {
 };
 exports.InvoicesModule = InvoicesModule;
 exports.InvoicesModule = InvoicesModule = __decorate([
     (0, common_1.Module)({
-        imports: [documents_module_1.DocumentsModule],
+        imports: [documents_module_1.DocumentsModule, emails_module_1.EmailsModule],
         controllers: [invoices_controller_1.InvoicesController],
         providers: [invoices_service_1.InvoicesService]
     })

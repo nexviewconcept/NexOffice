@@ -48,10 +48,10 @@ export class UsersService {
       <p><strong>Password:</strong> ${plainPassword}</p>
       <p>Please login and change your password as soon as possible.</p>
     `;
-    
+
     // Send to primary company email
     await this.emailsService.sendEmail(data.email, 'Your NexOffice Account Details', template);
-    
+
     // Send to notification email if provided
     if (data.notificationEmail) {
       await this.emailsService.sendEmail(data.notificationEmail, 'Your NexOffice Account Details', template);
@@ -70,7 +70,7 @@ export class UsersService {
   async changePassword(userId: string, currentPass: string, newPass: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException('User not found');
-    
+
     const valid = await argon2.verify(user.passwordHash, currentPass);
     if (!valid) throw new BadRequestException('Invalid current password');
 
@@ -102,7 +102,7 @@ export class UsersService {
 
     // Delete existing roles
     await this.prisma.userRole.deleteMany({ where: { userId: id } });
-    
+
     // Add new roles
     return this.prisma.user.update({
       where: { id },
@@ -127,7 +127,7 @@ export class UsersService {
     if (user?.email === this.mainSuperAdminEmail) {
       throw new BadRequestException('Cannot delete the Main Super Admin');
     }
-    
+
     // Prisma will cascade delete UserRoles if configured, or we delete manually
     await this.prisma.userRole.deleteMany({ where: { userId: id } });
     return this.prisma.user.delete({ where: { id } });

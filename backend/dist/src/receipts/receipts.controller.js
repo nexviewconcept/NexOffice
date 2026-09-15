@@ -38,6 +38,9 @@ let ReceiptsController = class ReceiptsController {
         });
         res.end(pdfBuffer);
     }
+    sendEmail(id) {
+        return this.receiptsService.sendReceiptEmail(id);
+    }
     deleteReceipt(id) {
         return this.receiptsService.deleteReceipt(id);
     }
@@ -68,6 +71,13 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, String]),
     __metadata("design:returntype", Promise)
 ], ReceiptsController.prototype, "downloadPdf", null);
+__decorate([
+    (0, common_1.Post)(':id/send-email'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ReceiptsController.prototype, "sendEmail", null);
 __decorate([
     (0, roles_decorator_1.Roles)('SUPER_ADMIN'),
     (0, common_1.Delete)(':id'),

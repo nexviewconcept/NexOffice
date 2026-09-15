@@ -3,7 +3,7 @@ import { Outlet, Navigate, NavLink, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
 import { 
-  LayoutDashboard, Users, Briefcase, FileText, 
+  LayoutDashboard, Users, Briefcase, FileText, BookOpen,
   Settings, LogOut, Menu, X, CheckCircle, DollarSign, Folder, Mail, 
   Shield, Database, Lock, MessageSquare, Package, Award, Bell, Sun, Moon, Cpu
 } from 'lucide-react';
@@ -42,52 +42,58 @@ export default function DashboardLayout() {
           </button>
         </div>
         <nav className="p-4 flex-1 overflow-y-auto">
-          <NavLink to="/" className={navClass} end>
+          <NavLink to="." className={navClass} end>
             <LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard
           </NavLink>
-          <NavLink to="/users" className={navClass}>
+          <NavLink to="users" className={navClass}>
             <Shield className="w-5 h-5 mr-3" /> System Users
           </NavLink>
-          <NavLink to="/permissions" className={navClass}>
+          <NavLink to="staff" className={navClass}>
+            <Briefcase className="w-5 h-5 mr-3" /> Staff Directory
+          </NavLink>
+          <NavLink to="students" className={navClass}>
+            <Users className="w-5 h-5 mr-3" /> Student Profiles
+          </NavLink>
+          <NavLink to="courses" className={navClass}>
+            <BookOpen className="w-5 h-5 mr-3" /> Courses & Training
+          </NavLink>
+          <NavLink to="permissions" className={navClass}>
             <Lock className="w-5 h-5 mr-3" /> Roles & Permissions
           </NavLink>
-          <NavLink to="/staff" className={navClass}>
-            <Users className="w-5 h-5 mr-3" /> Staff Profiles
-          </NavLink>
-          <NavLink to="/clients" className={navClass}>
+          <NavLink to="clients" className={navClass}>
             <Briefcase className="w-5 h-5 mr-3" /> Clients
           </NavLink>
-          <NavLink to="/invoices" className={navClass}>
+          <NavLink to="invoices" className={navClass}>
             <FileText className="w-5 h-5 mr-3" /> Invoices
           </NavLink>
-          <NavLink to="/receipts" className={navClass}>
+          <NavLink to="receipts" className={navClass}>
             <CheckCircle className="w-5 h-5 mr-3" /> Receipts
           </NavLink>
-          <NavLink to="/finance" className={navClass}>
+          <NavLink to="finance" className={navClass}>
             <DollarSign className="w-5 h-5 mr-3" /> Finance
           </NavLink>
-          <NavLink to="/files" className={navClass}>
+          <NavLink to="files" className={navClass}>
             <Folder className="w-5 h-5 mr-3" /> File Manager
           </NavLink>
-          <NavLink to="/emails" className={navClass}>
+          <NavLink to="emails" className={navClass}>
             <Mail className="w-5 h-5 mr-3" /> Email Center
           </NavLink>
-          <NavLink to="/inventory" className={navClass}>
+          <NavLink to="inventory" className={navClass}>
             <Package className="w-5 h-5 mr-3" /> Inventory
           </NavLink>
-          <NavLink to="/certificates" className={navClass}>
+          <NavLink to="certificates" className={navClass}>
             <Award className="w-5 h-5 mr-3" /> Certificates
           </NavLink>
-          <NavLink to="/notifications" className={navClass}>
+          <NavLink to="notifications" className={navClass}>
             <Bell className="w-5 h-5 mr-3" /> Notifications
           </NavLink>
-          <NavLink to="/support-tickets" className={navClass}>
+          <NavLink to="support-tickets" className={navClass}>
             <MessageSquare className="w-5 h-5 mr-3" /> Support Tickets
           </NavLink>
-          <NavLink to="/service-logs" className={navClass}>
+          <NavLink to="service-logs" className={navClass}>
             <Cpu className="w-5 h-5 mr-3" /> NIN & Services Log
           </NavLink>
-          <NavLink to="/backups" className={navClass}>
+          <NavLink to="backups" className={navClass}>
             <Database className="w-5 h-5 mr-3" /> Database Backups
           </NavLink>
         </nav>
@@ -141,7 +147,7 @@ export default function DashboardLayout() {
                     <p className="text-xs text-gray-500 dark:text-gray-400 font-medium truncate">{user?.email}</p>
                   </div>
                   <Link 
-                    to="/settings" 
+                    to="settings" 
                     onClick={() => setIsProfileMenuOpen(false)}
                     className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >

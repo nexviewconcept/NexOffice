@@ -1,10 +1,11 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { DocumentsService } from '../documents/documents.service';
+import { EmailsService } from '../emails/emails.service';
 
 @Injectable()
 export class ReceiptsService {
-  constructor(private prisma: PrismaService, private documents: DocumentsService) {}
+  constructor(private prisma: PrismaService, private documents: DocumentsService, private emails: EmailsService) {}
 
   async createReceipt(data: any) {
     const { invoiceId, amount, paymentMethod, notes } = data;
@@ -168,6 +169,39 @@ export class ReceiptsService {
       </html>
     `;
     return this.documents.generatePdf(html);
+  }
+
+  async sendReceiptEmail(id: string) {
+    const receipt = await this.prisma.receipt.findUnique({
+      where: { id },
+      include: { invoice: { include: { client: true } } }
+    });
+
+    if (!receipt || !receipt.invoice || !receipt.invoice.client) {
+      throw new NotFoundException('Receipt or Client not found');
+    }
+    
+    if (!receipt.invoice.client.email) {
+      throw new BadRequestException('Client does not have an email address');
+    }
+
+    const pdfBuffer = await this.generateReceiptPdf(id);
+    
+    const subject = `Receipt ${receipt.receiptNumber} from Nexview Concept Limited`;
+    const body = `Dear ${receipt.invoice.client.name},\n\nPlease find attached your payment receipt (${receipt.receiptNumber}) for the amount of ₦${receipt.amount.toLocaleString()}.\n\nThank you for your business.`;
+
+    await this.emails.sendEmail(
+      receipt.invoice.client.email,
+      subject,
+      undefined,
+      undefined,
+      undefined,
+      body,
+      pdfBuffer,
+      `${receipt.receiptNumber}.pdf`
+    );
+
+    return { message: 'Receipt queued for emailing successfully' };
   }
 
   async deleteReceipt(id: string) {

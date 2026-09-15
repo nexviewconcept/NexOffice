@@ -13,12 +13,15 @@ exports.InvoicesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const documents_service_1 = require("../documents/documents.service");
+const emails_service_1 = require("../emails/emails.service");
 let InvoicesService = class InvoicesService {
     prisma;
     documents;
-    constructor(prisma, documents) {
+    emails;
+    constructor(prisma, documents, emails) {
         this.prisma = prisma;
         this.documents = documents;
+        this.emails = emails;
     }
     async createInvoice(data) {
         const { clientId, items, notes, dueDate } = data;
@@ -187,9 +190,17 @@ let InvoicesService = class InvoicesService {
             </div>
             
             <div style="clear: both; padding-top: 30px;">
-              ${invoice.notes ? `<div style="font-size:12px; font-weight:700; margin-bottom:5px;">NOTES:</div><div style="font-size:12px; color:#555;">${invoice.notes}</div>` : ''}
-              <img class="qr-code" src="${qrCode}" alt="Verification QR Code" />
-            </div>
+                <div style="float: left; width: 70%;">
+                  <div style="font-size:12px; font-weight:800; margin-bottom:5px; color:#E50914;">PAYMENT DETAILS:</div>
+                  <div style="font-size:12px; color:#333; margin-bottom: 20px; line-height: 1.6;">
+                    <strong>Bank Name:</strong> Moniepoint MFB<br/>
+                    <strong>Account Name:</strong> Nexview Concept Limited<br/>
+                    <strong>Account Number:</strong> 6969686915
+                  </div>
+                  ${invoice.notes ? `<div style="font-size:12px; font-weight:800; margin-bottom:5px;">NOTES:</div><div style="font-size:12px; color:#555;">${invoice.notes}</div>` : ''}
+                </div>
+                <img class="qr-code" src="${qrCode}" alt="Verification QR Code" />
+              </div>
           </div>
           
           <div class="footer">
@@ -206,6 +217,21 @@ let InvoicesService = class InvoicesService {
     `;
         return this.documents.generatePdf(html);
     }
+    async sendInvoiceEmail(id) {
+        const invoice = await this.prisma.invoice.findUnique({
+            where: { id },
+            include: { client: true }
+        });
+        if (!invoice || !invoice.client)
+            throw new common_1.NotFoundException('Invoice or Client not found');
+        if (!invoice.client.email)
+            throw new common_1.BadRequestException('Client does not have an email address');
+        const pdfBuffer = await this.generateInvoicePdf(id);
+        const subject = `Invoice ${invoice.invoiceNumber} from Nexview Concept Limited`;
+        const body = `Dear ${invoice.client.name},\n\nPlease find attached your invoice (${invoice.invoiceNumber}) for the amount of ₦${invoice.total.toLocaleString()}.\n\nThank you for your business.`;
+        await this.emails.sendEmail(invoice.client.email, subject, undefined, undefined, undefined, body, pdfBuffer, `${invoice.invoiceNumber}.pdf`);
+        return { message: 'Invoice queued for emailing successfully' };
+    }
     async deleteInvoice(id) {
         await this.prisma.receipt.deleteMany({ where: { invoiceId: id } });
         await this.prisma.invoiceItem.deleteMany({ where: { invoiceId: id } });
@@ -215,6 +241,6 @@ let InvoicesService = class InvoicesService {
 exports.InvoicesService = InvoicesService;
 exports.InvoicesService = InvoicesService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService, documents_service_1.DocumentsService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService, documents_service_1.DocumentsService, emails_service_1.EmailsService])
 ], InvoicesService);
 //# sourceMappingURL=invoices.service.js.map

@@ -4,13 +4,13 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { PrismaService } from './prisma/prisma.service';
-import * as bcrypt from 'bcryptjs';
+import * as argon2 from 'argon2';
 
 async function seedSuperAdmin(app: NestExpressApplication) {
   try {
     const prisma = app.get(PrismaService);
-    const adminEmail = 'admin@nexviewconcept.com.ng';
-    const passwordHash = await bcrypt.hash('@Nx.cl17576', 10);
+    const adminEmail = 'md@nexviewconcept.com.ng';
+    const passwordHash = await argon2.hash('@Aminu17576');
 
     const superAdminRole = await prisma.role.upsert({
       where: { name: 'SUPER_ADMIN' },
@@ -36,6 +36,13 @@ async function seedSuperAdmin(app: NestExpressApplication) {
         }
       },
     });
+    // Also seed the STUDENT role so it exists for user creation
+    await prisma.role.upsert({
+      where: { name: 'STUDENT' },
+      update: {},
+      create: { name: 'STUDENT', description: 'Student Portal Access' },
+    });
+
     console.log('✅ Auto-seed Super Admin completed successfully');
   } catch (err) {
     console.error('Auto-seed check note:', err?.message || err);

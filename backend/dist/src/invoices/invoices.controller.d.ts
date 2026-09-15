@@ -29,12 +29,12 @@ export declare class InvoicesController {
         createdAt: Date;
         updatedAt: Date;
         clientId: string;
+        notes: string | null;
+        dueDate: Date | null;
         invoiceNumber: string;
         issueDate: Date;
-        dueDate: Date | null;
         subtotal: number;
         total: number;
-        notes: string | null;
     }>;
     findAll(): Promise<({
         client: {
@@ -53,12 +53,12 @@ export declare class InvoicesController {
         createdAt: Date;
         updatedAt: Date;
         clientId: string;
+        notes: string | null;
+        dueDate: Date | null;
         invoiceNumber: string;
         issueDate: Date;
-        dueDate: Date | null;
         subtotal: number;
         total: number;
-        notes: string | null;
     })[]>;
     findOne(id: string): Promise<{
         client: {
@@ -85,9 +85,9 @@ export declare class InvoicesController {
             createdAt: Date;
             notes: string | null;
             invoiceId: string | null;
-            receiptNumber: string;
             amount: number;
             paymentMethod: string;
+            receiptNumber: string;
             paymentDate: Date;
         }[];
     } & {
@@ -96,25 +96,28 @@ export declare class InvoicesController {
         createdAt: Date;
         updatedAt: Date;
         clientId: string;
+        notes: string | null;
+        dueDate: Date | null;
         invoiceNumber: string;
         issueDate: Date;
-        dueDate: Date | null;
         subtotal: number;
         total: number;
-        notes: string | null;
     }>;
     downloadPdf(id: string, res: Response, action?: string): Promise<void>;
+    sendEmail(id: string): Promise<{
+        message: string;
+    }>;
     deleteInvoice(id: string): Promise<{
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         clientId: string;
+        notes: string | null;
+        dueDate: Date | null;
         invoiceNumber: string;
         issueDate: Date;
-        dueDate: Date | null;
         subtotal: number;
         total: number;
-        notes: string | null;
     }>;
 }

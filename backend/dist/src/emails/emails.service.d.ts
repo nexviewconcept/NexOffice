@@ -12,7 +12,7 @@ export declare class EmailsService {
         template: string | null;
         sentAt: Date;
     }[]>;
-    sendEmail(recipient: string, subject: string, template?: string, attachmentPath?: string, senderEmail?: string, bodyText?: string): Promise<{
+    sendEmail(recipient: string, subject: string, template?: string, attachmentPath?: string, senderEmail?: string, bodyText?: string, attachmentBuffer?: Buffer, attachmentFilename?: string): Promise<{
         message: string;
         logId: string;
     }>;

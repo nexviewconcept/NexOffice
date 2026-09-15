@@ -71,7 +71,7 @@ let EmailsService = EmailsService_1 = class EmailsService {
             orderBy: { sentAt: 'desc' }
         });
     }
-    async sendEmail(recipient, subject, template, attachmentPath, senderEmail, bodyText) {
+    async sendEmail(recipient, subject, template, attachmentPath, senderEmail, bodyText, attachmentBuffer, attachmentFilename) {
         this.logger.log(`Queueing email to ${recipient} (Subject: ${subject})`);
         const log = await this.prisma.emailLog.create({
             data: {
@@ -84,8 +84,20 @@ let EmailsService = EmailsService_1 = class EmailsService {
         setTimeout(async () => {
             try {
                 const smtpUser = process.env.SMTP_USER;
+                let fromName = process.env.SMTP_FROM_NAME || 'Nexview Concept Limited';
+                if (senderEmail) {
+                    if (senderEmail.includes('md@')) {
+                        fromName = 'Nexview Admin';
+                    }
+                    else if (senderEmail.includes('support@')) {
+                        fromName = 'Nexview Support';
+                    }
+                    else if (senderEmail.includes('info@')) {
+                        fromName = 'Nexview Concept Limited';
+                    }
+                }
                 const mailOptions = {
-                    from: `"${process.env.SMTP_FROM_NAME || 'NexOffice'}" <${smtpUser}>`,
+                    from: `"${fromName}" <${smtpUser}>`,
                     replyTo: senderEmail || smtpUser,
                     to: recipient,
                     subject: subject,
@@ -94,6 +106,12 @@ let EmailsService = EmailsService_1 = class EmailsService {
                 if (attachmentPath) {
                     mailOptions.attachments = [{
                             path: attachmentPath
+                        }];
+                }
+                else if (attachmentBuffer && attachmentFilename) {
+                    mailOptions.attachments = [{
+                            filename: attachmentFilename,
+                            content: attachmentBuffer
                         }];
                 }
                 const info = await this.transporter.sendMail(mailOptions);
@@ -128,8 +146,9 @@ let EmailsService = EmailsService_1 = class EmailsService {
         setTimeout(async () => {
             try {
                 const smtpUser = process.env.SMTP_USER;
+                let fromName = process.env.SMTP_FROM_NAME || 'Nexview Concept Limited';
                 const mailOptions = {
-                    from: `"${process.env.SMTP_FROM_NAME || 'NexOffice'}" <${smtpUser}>`,
+                    from: `"${fromName}" <${smtpUser}>`,
                     to: log.recipient,
                     subject: log.subject,
                     html: log.template || `<p>${log.subject}</p>`
