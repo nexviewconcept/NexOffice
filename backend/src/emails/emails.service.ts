@@ -14,7 +14,7 @@ export class EmailsService {
       secure: true, // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER || 'info@nexviewconcept.com.ng',
-        pass: process.env.SMTP_PASSWORD || process.env.SMTP_PASS || 'jTzxCfzNDx9M',
+        pass: process.env.SMTP_PASSWORD || process.env.SMTP_PASS ,
       },
       tls: {
         rejectUnauthorized: false
@@ -141,5 +141,6 @@ export class EmailsService {
     return { message: 'Email retry queued' };
   }
 }
+
 
 
