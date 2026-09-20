@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Users, FileText, Package, CheckCircle, Loader2, Plus, Receipt, MessageSquare, Settings } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import api from '../lib/api';
 
 interface DashboardStats {
@@ -35,6 +35,9 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+  const location = useLocation();
+  const basePath = location.pathname.startsWith('/nexoffice') ? '/nexoffice' : '/admin';
 
   const statCards = [
     { label: 'Total Staff', value: stats.totalStaff, icon: Users, color: 'bg-blue-500' },
@@ -73,32 +76,32 @@ export default function Dashboard() {
       <div className="mb-8">
         <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Quick Links</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          <Link to="/invoices" className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-blue-100 transition-all text-gray-600 dark:text-gray-400 hover:text-blue-600 group">
+          <Link to={`${basePath}/invoices`} className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-blue-100 transition-all text-gray-600 dark:text-gray-400 hover:text-blue-600 group">
             <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Plus className="w-6 h-6" />
             </div>
             <span className="text-sm font-medium">New Invoice</span>
           </Link>
-          <Link to="/receipts" className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-green-100 transition-all text-gray-600 dark:text-gray-400 hover:text-green-600 group">
+          <Link to={`${basePath}/receipts`} className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-green-100 transition-all text-gray-600 dark:text-gray-400 hover:text-green-600 group">
             <div className="w-12 h-12 bg-green-50 text-green-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Receipt className="w-6 h-6" />
             </div>
             <span className="text-sm font-medium">New Receipt</span>
           </Link>
-          <Link to="/staff-profiles" className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-purple-100 transition-all text-gray-600 dark:text-gray-400 hover:text-purple-600 group">
+          <Link to={`${basePath}/staff`} className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-purple-100 transition-all text-gray-600 dark:text-gray-400 hover:text-purple-600 group">
             <div className="w-12 h-12 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Users className="w-6 h-6" />
             </div>
             <span className="text-sm font-medium">Staff Profiles</span>
           </Link>
-          <Link to="/support-tickets" className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-orange-100 transition-all text-gray-600 dark:text-gray-400 hover:text-orange-600 group">
+          <Link to={`${basePath}/support-tickets`} className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-orange-100 transition-all text-gray-600 dark:text-gray-400 hover:text-orange-600 group">
             <div className="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <MessageSquare className="w-6 h-6" />
             </div>
             <span className="text-sm font-medium">Support Tickets</span>
           </Link>
-          <Link to="/settings" className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-gray-200 dark:border-gray-700 transition-all text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-100 group">
-            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+          <Link to={`${basePath}/settings`} className="flex flex-col items-center justify-center p-4 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:shadow-md hover:border-gray-200 dark:border-gray-700 transition-all text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-100 group">
+            <div className="w-12 h-12 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Settings className="w-6 h-6" />
             </div>
             <span className="text-sm font-medium">Settings</span>

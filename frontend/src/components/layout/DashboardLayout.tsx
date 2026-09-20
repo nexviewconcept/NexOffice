@@ -5,14 +5,18 @@ import { useThemeStore } from '../../store/themeStore';
 import { 
   LayoutDashboard, Users, Briefcase, FileText, BookOpen,
   Settings, LogOut, Menu, X, CheckCircle, DollarSign, Folder, Mail, 
-  Shield, Database, Lock, MessageSquare, Package, Award, Bell, Sun, Moon, Cpu
+  Shield, Database, Lock, MessageSquare, Package, Award, Bell, Sun, Moon, Cpu, QrCode, Barcode
 } from 'lucide-react';
+import { QRCodeModal } from '../ui/QRCodeModal';
+import { BarcodeModal } from '../ui/BarcodeModal';
 
 export default function DashboardLayout() {
   const { token, logout, user } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isBarcodeModalOpen, setIsBarcodeModalOpen] = useState(false);
 
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -69,6 +73,15 @@ export default function DashboardLayout() {
           <NavLink to="receipts" className={navClass}>
             <CheckCircle className="w-5 h-5 mr-3" /> Receipts
           </NavLink>
+          <NavLink to="whatsapp-settings" className={navClass}>
+            <MessageSquare className="w-5 h-5 mr-3" /> WhatsApp Bot
+          </NavLink>
+          <NavLink to="tasks" className={navClass}>
+            <CheckCircle className="w-5 h-5 mr-3" /> Staff Tasks
+          </NavLink>
+          <NavLink to="settings" className={navClass}>
+            <Settings className="w-5 h-5 mr-3" /> Settings
+          </NavLink>
           <NavLink to="finance" className={navClass}>
             <DollarSign className="w-5 h-5 mr-3" /> Finance
           </NavLink>
@@ -92,6 +105,9 @@ export default function DashboardLayout() {
           </NavLink>
           <NavLink to="service-logs" className={navClass}>
             <Cpu className="w-5 h-5 mr-3" /> NIN & Services Log
+          </NavLink>
+          <NavLink to="audit" className={navClass}>
+            <Shield className="w-5 h-5 mr-3" /> Audit Logs
           </NavLink>
           <NavLink to="backups" className={navClass}>
             <Database className="w-5 h-5 mr-3" /> Database Backups
@@ -122,6 +138,20 @@ export default function DashboardLayout() {
             <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100 hidden sm:block">NexOffice</h1>
           </div>
           <div className="flex items-center gap-4 relative">
+            <button 
+                onClick={() => setIsBarcodeModalOpen(true)}
+                title="Generate Barcode"
+                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+                <Barcode className="w-5 h-5" />
+            </button>
+            <button 
+                onClick={() => setIsQrModalOpen(true)}
+                title="Generate QR Code"
+                className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+                <QrCode className="w-5 h-5" />
+            </button>
             <button 
                 onClick={toggleTheme}
                 className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
@@ -171,6 +201,9 @@ export default function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+
+      <QRCodeModal isOpen={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} />
+      <BarcodeModal isOpen={isBarcodeModalOpen} onClose={() => setIsBarcodeModalOpen(false)} />
     </div>
   );
 }

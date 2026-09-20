@@ -8,7 +8,7 @@ interface Client {
   name: string;
   email: string | null;
   phone: string | null;
-  company: string | null;
+  address: string | null;
 }
 
 export default function Clients() {
@@ -17,7 +17,8 @@ export default function Clients() {
   const [search, setSearch] = useState('');
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', company: '' });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', address: '' });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -29,24 +30,50 @@ export default function Clients() {
       const res = await api.get('/clients');
       setClients(res.data);
     } catch (err) {
-      console.error(err);
+      console.error(err); alert(err.response?.data?.message || err.message || "Failed to save client");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateClient = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await api.post('/clients', formData);
+      if (editingId) {
+        await api.put(`/clients/${editingId}`, formData);
+      } else {
+        await api.post('/clients', formData);
+      }
       setIsModalOpen(false);
-      setFormData({ name: '', email: '', phone: '', company: '' });
+      setEditingId(null);
+      setFormData({ name: '', email: '', phone: '', address: '' });
       fetchClients();
     } catch (err) {
-      console.error(err);
+      console.error(err); alert(err.response?.data?.message || err.message || "Failed to save client");
     } finally {
       setSubmitting(false);
+    }
+  };
+  
+  const handleEditClick = (client: Client) => {
+    setEditingId(client.id);
+    setFormData({
+      name: client.name || "",
+      email: client.email || "",
+      phone: client.phone || "",
+      address: client.address || ""
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClient = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this client?")) return;
+    try {
+      await api.delete(`/clients/${id}`);
+      fetchClients();
+    } catch (err) {
+      console.error(err); alert(err.response?.data?.message || err.message || "Failed to save client");
     }
   };
 
@@ -59,7 +86,7 @@ export default function Clients() {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Clients</h2>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => { setEditingId(null); setFormData({ name: "", email: "", phone: "", address: "" }); setIsModalOpen(true); }}
           className="bg-[#E50914] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors flex items-center shadow-sm"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -67,8 +94,8 @@ export default function Clients() {
         </button>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New Client">
-        <form onSubmit={handleCreateClient} className="space-y-4">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingId ? "Edit Client" : "Add New Client"}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
             <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#E50914] focus:border-[#E50914] outline-none" placeholder="John Doe" />
@@ -82,8 +109,8 @@ export default function Clients() {
             <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#E50914] focus:border-[#E50914] outline-none" placeholder="+234 800 000 0000" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company</label>
-            <input type="text" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#E50914] focus:border-[#E50914] outline-none" placeholder="Nexview Concept Ltd" />
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
+            <input type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#E50914] focus:border-[#E50914] outline-none" placeholder="123 Main St" />
           </div>
           <div className="pt-4 flex justify-end gap-3">
             <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-950 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">Cancel</button>
@@ -131,14 +158,14 @@ export default function Clients() {
                 </tr>
               ) : (
                 filtered.map(client => (
-                  <tr key={client.id} className="hover:bg-gray-50 dark:bg-gray-950/50 transition-colors">
+                  <tr key={client.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-gray-800 dark:text-gray-100">{client.name}</td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{client.email || '-'}</td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{client.phone || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{client.company || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{client.address || '-'}</td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-gray-400 hover:text-blue-500 mx-2 transition-colors"><Edit className="w-4 h-4" /></button>
-                      <button className="text-gray-400 hover:text-red-500 transition-colors"><Trash className="w-4 h-4" /></button>
+                      <button onClick={() => handleEditClick(client)} className="text-gray-400 hover:text-blue-500 mx-2 transition-colors"><Edit className="w-4 h-4" /></button>
+                      <button onClick={() => handleDeleteClient(client.id)} className="text-gray-400 hover:text-red-500 transition-colors"><Trash className="w-4 h-4" /></button>
                     </td>
                   </tr>
                 ))
@@ -150,3 +177,7 @@ export default function Clients() {
     </div>
   );
 }
+
+
+
+

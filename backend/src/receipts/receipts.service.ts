@@ -2,10 +2,11 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { DocumentsService } from '../documents/documents.service';
 import { EmailsService } from '../emails/emails.service';
+import { WhatsappService } from '../whatsapp/whatsapp.service';
 
 @Injectable()
 export class ReceiptsService {
-  constructor(private prisma: PrismaService, private documents: DocumentsService, private emails: EmailsService) {}
+  constructor(private prisma: PrismaService, private documents: DocumentsService, private emails: EmailsService, private whatsapp: WhatsappService) {}
 
   async createReceipt(data: any) {
     const { invoiceId, amount, paymentMethod, notes } = data;
@@ -171,7 +172,7 @@ export class ReceiptsService {
     return this.documents.generatePdf(html);
   }
 
-  async sendReceiptEmail(id: string) {
+  async sendReceiptEmail(id: string, customEmail?: string) {
     const receipt = await this.prisma.receipt.findUnique({
       where: { id },
       include: { invoice: { include: { client: true } } }
@@ -181,7 +182,8 @@ export class ReceiptsService {
       throw new NotFoundException('Receipt or Client not found');
     }
     
-    if (!receipt.invoice.client.email) {
+    const emailToUse = customEmail || receipt.invoice.client.email;
+    if (!emailToUse) {
       throw new BadRequestException('Client does not have an email address');
     }
 
@@ -191,7 +193,7 @@ export class ReceiptsService {
     const body = `Dear ${receipt.invoice.client.name},\n\nPlease find attached your payment receipt (${receipt.receiptNumber}) for the amount of ₦${receipt.amount.toLocaleString()}.\n\nThank you for your business.`;
 
     await this.emails.sendEmail(
-      receipt.invoice.client.email,
+      emailToUse,
       subject,
       undefined,
       undefined,
@@ -204,7 +206,84 @@ export class ReceiptsService {
     return { message: 'Receipt queued for emailing successfully' };
   }
 
+    async sendWhatsappReceipt(id: string, customPhone?: string) {
+    const receipt = await this.prisma.receipt.findUnique({
+      where: { id },
+      include: { invoice: { include: { client: true } } }
+    });
+
+    if (!receipt || !receipt.invoice || !receipt.invoice.client) {
+      throw new NotFoundException('Receipt or Client not found');
+    }
+    
+    const phoneToUse = customPhone || receipt.invoice.client.phone;
+    if (!phoneToUse) {
+      throw new BadRequestException('Client does not have a phone number');
+    }
+
+    const message = "Dear $(${receipt.invoice.client.name}),\n\nThank you for your payment of ₦$(${receipt.amount.toLocaleString()}) towards Invoice $(${receipt.invoice.invoiceNumber}).\n\nReceipt No: $(${receipt.receiptNumber})\nDate: $(${receipt.paymentDate.toLocaleDateString()})\n\nBest regards,\nNexview Concept Limited";
+    
+    await this.whatsapp.sendMessage(phoneToUse, message);
+    return { message: 'Receipt sent via WhatsApp successfully' };
+  }
+
+  async updateReceipt(id: string, data: any) {
+    return this.prisma.$transaction(async (tx) => {
+      const receipt = await tx.receipt.update({
+        where: { id },
+        data: {
+          amount: data.amount ? Number(data.amount) : undefined,
+          paymentMethod: data.paymentMethod,
+          notes: data.notes
+        },
+        include: { invoice: { include: { receipts: true } } }
+      });
+      
+      if (receipt.invoice && receipt.invoiceId) {
+        const totalPaid = receipt.invoice.receipts.reduce((sum, r) => sum + r.amount, 0);
+        let newStatus = 'PARTIALLY_PAID';
+        if (totalPaid >= receipt.invoice.total - 0.01) {
+          newStatus = 'PAID';
+        } else if (totalPaid <= 0.01) {
+          newStatus = 'DRAFT';
+        }
+
+        await tx.invoice.update({
+          where: { id: receipt.invoiceId },
+          data: { status: newStatus }
+        });
+      }
+      
+      return receipt;
+    });
+  }
+
   async deleteReceipt(id: string) {
-    return this.prisma.receipt.delete({ where: { id } });
+    return this.prisma.$transaction(async (tx) => {
+      const receipt = await tx.receipt.findUnique({ where: { id }, include: { invoice: true } });
+      if (!receipt) throw new NotFoundException('Receipt not found');
+      
+      await tx.receipt.delete({ where: { id } });
+      
+      if (receipt.invoice && receipt.invoiceId) {
+        const remainingReceipts = await tx.receipt.findMany({ where: { invoiceId: receipt.invoiceId } });
+        const totalPaid = remainingReceipts.reduce((sum, r) => sum + r.amount, 0);
+        
+        let newStatus = 'PARTIALLY_PAID';
+        if (totalPaid >= receipt.invoice.total - 0.01) {
+          newStatus = 'PAID';
+        } else if (totalPaid <= 0.01) {
+          newStatus = 'DRAFT';
+        }
+        
+        await tx.invoice.update({
+          where: { id: receipt.invoiceId },
+          data: { status: newStatus }
+        });
+      }
+      
+      return { message: 'Deleted successfully' };
+    });
   }
 }
+

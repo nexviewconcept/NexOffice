@@ -224,7 +224,7 @@ export default function StaffProfiles() {
                 </tr>
               ) : (
                 filtered.map(profile => (
-                  <tr key={profile.id} className="hover:bg-gray-50 dark:bg-gray-950/50 transition-colors">
+                  <tr key={profile.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950/50 transition-colors dark:bg-transparent bg-white">
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         {profile.photoUrl ? (

@@ -81,7 +81,7 @@ export default function Students() {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {students.map((student: any) => (
-                <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
+                <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-800/50 transition">
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 dark:text-white">
                       {student.firstName} {student.lastName}
@@ -134,3 +134,4 @@ export default function Students() {
     </div>
   );
 }
+

@@ -119,7 +119,7 @@ export default function Users() {
             ) : users.map(user => {
               const currentRole = user.roles?.[0]?.role?.name || 'UNKNOWN';
               return (
-                <tr key={user.id} className="hover:bg-gray-50 dark:bg-gray-950">
+                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-900 dark:bg-gray-950 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-800 dark:text-gray-100">
                     <div className="flex items-center">
                       <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center mr-3">
@@ -210,3 +210,5 @@ export default function Users() {
     </div>
   );
 }
+
+

@@ -6,7 +6,8 @@ export class ClientsService {
   constructor(private prisma: PrismaService) {}
 
   async createClient(data: any) {
-    return this.prisma.client.create({ data });
+    const { company, ...validData } = data;
+    return this.prisma.client.create({ data: validData });
   }
 
   async findAll() {
@@ -20,10 +21,12 @@ export class ClientsService {
   }
 
   async updateClient(id: string, data: any) {
-    return this.prisma.client.update({ where: { id }, data });
+    const { company, ...validData } = data;
+    return this.prisma.client.update({ where: { id }, data: validData });
   }
 
   async deleteClient(id: string) {
     return this.prisma.client.delete({ where: { id } });
   }
 }
+

@@ -168,11 +168,15 @@ export default function EmailCenter() {
             ) : logs.length === 0 ? (
               <tr><td colSpan={6} className="p-8 text-center text-gray-400">No emails have been sent yet.</td></tr>
             ) : logs.map(log => (
-              <tr key={log.id} className="hover:bg-gray-50 dark:bg-gray-950">
+              <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-900 dark:bg-gray-950 transition-colors">
                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{new Date(log.sentAt).toLocaleString()}</td>
                 <td className="px-6 py-4 font-medium text-gray-800 dark:text-gray-100">{log.recipient}</td>
                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{log.subject}</td>
-                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{log.template || '-'}</td>
+                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                  <div className="truncate max-w-xs" title={log.template?.replace(/<[^>]*>?/gm, '')}>
+                    {log.template ? log.template.replace(/<[^>]*>?/gm, '').substring(0, 50) + (log.template.length > 50 ? '...' : '') : '-'}
+                  </div>
+                </td>
                 <td className="px-6 py-4">
                   <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
                     log.status === 'SENT' ? 'bg-green-100 text-green-700' :
@@ -270,3 +274,5 @@ export default function EmailCenter() {
     </div>
   );
 }
+
+

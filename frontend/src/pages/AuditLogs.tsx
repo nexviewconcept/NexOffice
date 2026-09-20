@@ -114,7 +114,7 @@ export default function AuditLogs() {
                 </td>
               </tr>
             ) : logs.map(log => (
-              <tr key={log.id} className="hover:bg-gray-50 dark:bg-gray-950">
+              <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-900 dark:bg-gray-950 transition-colors">
                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                   {new Date(log.timestamp).toLocaleString()}
                 </td>
@@ -154,3 +154,5 @@ export default function AuditLogs() {
     </div>
   );
 }
+
+

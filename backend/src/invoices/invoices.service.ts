@@ -2,28 +2,35 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { DocumentsService } from '../documents/documents.service';
 import { EmailsService } from '../emails/emails.service';
+import { WhatsappService } from '../whatsapp/whatsapp.service';
 
 @Injectable()
 export class InvoicesService {
-  constructor(private prisma: PrismaService, private documents: DocumentsService, private emails: EmailsService) {}
+  constructor(
+    private prisma: PrismaService, 
+    private documents: DocumentsService, 
+    private emails: EmailsService,
+    private whatsapp: WhatsappService
+  ) {}
 
   async createInvoice(data: any) {
-    const { clientId, items, notes, dueDate } = data;
+    const { clientId, items, notes, dueDate, discount = 0 } = data;
     
     let subtotal = 0;
     if (items && items.length > 0) {
       subtotal = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unitPrice), 0);
     }
-    const total = subtotal;
+    const total = subtotal - Number(discount);
 
     return this.prisma.invoice.create({
       data: {
         subtotal,
+        discount: Number(discount),
         total,
         notes,
         dueDate: dueDate ? new Date(dueDate) : null,
-        invoiceNumber: `INV-${Date.now()}`,
-        status: 'SENT', 
+        invoiceNumber: `INV-${new Date().getFullYear().toString().slice(-2)}${(new Date().getMonth()+1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`,
+        status: 'DRAFT', 
         client: { connect: { id: clientId } },
         items: {
           create: items?.map((item: any) => ({
@@ -39,9 +46,45 @@ export class InvoicesService {
     });
   }
 
+  async updateInvoice(id: string, data: any) {
+    const { clientId, items, notes, dueDate, discount = 0 } = data;
+    
+    let subtotal = 0;
+    if (items && items.length > 0) {
+      subtotal = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unitPrice), 0);
+    }
+    const total = subtotal - Number(discount);
+
+    // First delete existing items
+    await this.prisma.invoiceItem.deleteMany({ where: { invoiceId: id } });
+
+    // Then update invoice and create new items
+    return this.prisma.invoice.update({
+      where: { id },
+      data: {
+        subtotal,
+        discount: Number(discount),
+        total,
+        notes,
+        dueDate: dueDate ? new Date(dueDate) : null,
+        clientId,
+        items: {
+          create: items?.map((item: any) => ({
+            description: item.description,
+            quantity: item.quantity,
+            unit: item.unit,
+            unitPrice: item.unitPrice,
+            total: item.quantity * item.unitPrice
+          }))
+        }
+      },
+      include: { client: true, items: true }
+    });
+  }
+
   async findAll() {
     return this.prisma.invoice.findMany({ 
-      include: { client: true },
+      include: { client: true, items: true, receipts: true },
       orderBy: { createdAt: 'desc' }
     });
   }
@@ -209,14 +252,15 @@ export class InvoicesService {
     return this.documents.generatePdf(html);
   }
 
-  async sendInvoiceEmail(id: string) {
+  async sendInvoiceEmail(id: string, customEmail?: string) {
     const invoice = await this.prisma.invoice.findUnique({
       where: { id },
       include: { client: true }
     });
 
     if (!invoice || !invoice.client) throw new NotFoundException('Invoice or Client not found');
-    if (!invoice.client.email) throw new BadRequestException('Client does not have an email address');
+    const recipientEmail = customEmail || invoice.client.email;
+    if (!recipientEmail) throw new BadRequestException('Client does not have an email address and no alternative was provided');
 
     const pdfBuffer = await this.generateInvoicePdf(id);
     
@@ -224,17 +268,51 @@ export class InvoicesService {
     const body = `Dear ${invoice.client.name},\n\nPlease find attached your invoice (${invoice.invoiceNumber}) for the amount of ₦${invoice.total.toLocaleString()}.\n\nThank you for your business.`;
 
     await this.emails.sendEmail(
-      invoice.client.email,
+      recipientEmail,
       subject,
-      undefined,
-      undefined,
-      undefined,
-      body,
-      pdfBuffer,
-      `${invoice.invoiceNumber}.pdf`
+      undefined, // template
+      undefined, // attachmentPath
+      undefined, // senderEmail
+      body,      // bodyText
+      pdfBuffer, // attachmentBuffer
+      `invoice-${invoice.invoiceNumber}.pdf` // attachmentFilename
     );
 
-    return { message: 'Invoice queued for emailing successfully' };
+    await this.prisma.invoice.update({
+      where: { id },
+      data: { status: 'SENT' }
+    });
+    
+    return { success: true };
+  }
+
+  async sendWhatsappInvoice(id: string, customPhone?: string) {
+    const invoice = await this.prisma.invoice.findUnique({
+      where: { id },
+      include: { client: true }
+    });
+
+    if (!invoice || !invoice.client) throw new NotFoundException('Invoice or Client not found');
+    const recipientPhone = customPhone || invoice.client.phone;
+    if (!recipientPhone) throw new BadRequestException('Client does not have a phone number and no alternative was provided');
+
+    const pdfBuffer = await this.generateInvoicePdf(id);
+    
+    const caption = `Dear ${invoice.client.name},\n\nPlease find attached your invoice (*${invoice.invoiceNumber}*) for the amount of *₦${invoice.total.toLocaleString()}*.\n\nThank you for your business.`;
+
+    await this.whatsapp.sendDocument(
+      recipientPhone,
+      pdfBuffer,
+      `invoice-${invoice.invoiceNumber}.pdf`,
+      caption
+    );
+
+    await this.prisma.invoice.update({
+      where: { id },
+      data: { status: 'SENT' }
+    });
+    
+    return { success: true };
   }
 
   async deleteInvoice(id: string) {
@@ -244,3 +322,6 @@ export class InvoicesService {
     return this.prisma.invoice.delete({ where: { id } });
   }
 }
+
+
+

@@ -236,7 +236,7 @@ export default function ServiceLogs() {
             ) : filteredLogs.length === 0 ? (
               <tr><td colSpan={8} className="p-8 text-center text-gray-400">No service records found.</td></tr>
             ) : filteredLogs.map(log => (
-              <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-950 transition-colors">
+              <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-950 transition-colors">
                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                   {new Date(log.paymentDate || log.createdAt).toLocaleDateString()}
                   <span className="block text-xs text-gray-400">{new Date(log.paymentDate || log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
@@ -432,3 +432,4 @@ export default function ServiceLogs() {
     </div>
   );
 }
+

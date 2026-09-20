@@ -31,6 +31,7 @@ export default function Invoices() {
   
   // Payment Modal
   const [paymentModal, setPaymentModal] = useState(false);
+  const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('BANK_TRANSFER');
@@ -190,7 +191,7 @@ export default function Invoices() {
             {loading ? (
               <tr><td colSpan={6} className="p-8 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
             ) : invoices.map(inv => (
-              <tr key={inv.id} className="hover:bg-gray-50 dark:bg-gray-950">
+              <tr key={inv.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-900 dark:bg-gray-950 transition-colors">
                 <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300">{inv.invoiceNumber}</td>
                 <td className="px-6 py-4">
                   <div className="font-medium text-gray-800 dark:text-gray-100">{inv.client.name}</div>
@@ -207,7 +208,7 @@ export default function Invoices() {
                   <div className="flex justify-end gap-2">
                     {inv.status !== 'PAID' && (
                       <button 
-                        onClick={() => { setSelectedInvoice(inv); setPaymentAmount(inv.total.toString()); setPaymentModal(true); }}
+                        onClick={() => { setSelectedInvoice(inv); const paid = inv.receipts ? inv.receipts.reduce((sum: number, r: any) => sum + r.amount, 0) : 0; setPaymentAmount((inv.total - paid).toString()); setPaymentModal(true); }}
                         className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Record Payment"
                       >
                         <DollarSign className="w-5 h-5" />
@@ -334,7 +335,7 @@ export default function Invoices() {
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={() => setPaymentModal(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-950">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
+            <button type="submit" disabled={isSubmittingPayment} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center disabled:opacity-50">
               <CheckCircle className="w-4 h-4 mr-2" /> Save & Generate Receipt
             </button>
           </div>
@@ -357,3 +358,4 @@ export default function Invoices() {
     </div>
   );
 }
+

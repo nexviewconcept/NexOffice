@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Get, Res, UseGuards, Query } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Put, Res, UseGuards, Query } from '@nestjs/common';
 import { CertificatesService } from './certificates.service';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -25,6 +25,13 @@ export class CertificatesController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
+  @Put(':id')
+  update(@Param('id') id: string, @Body() data: any) {
+    return this.certificatesService.updateCertificate(id, data);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
   @Get(':id/pdf')
   async downloadPdf(@Param('id') id: string, @Res() res: Response, @Query('action') action?: string) {
     const pdfBuffer = await this.certificatesService.generatePdf(id);
@@ -34,5 +41,19 @@ export class CertificatesController {
       'Content-Disposition': `${disposition}; filename=certificate.pdf`,
     });
     res.end(pdfBuffer);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
+  @Post(':id/email')
+  emailCertificate(@Param('id') id: string, @Body('email') email: string) {
+    return this.certificatesService.emailCertificate(id, email);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
+  @Post(':id/whatsapp')
+  whatsappCertificate(@Param('id') id: string, @Body('phone') phone: string) {
+    return this.certificatesService.whatsappCertificate(id, phone);
   }
 }

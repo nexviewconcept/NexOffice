@@ -192,7 +192,7 @@ export default function Notifications() {
               ) : announcements.length === 0 ? (
                  <tr><td colSpan={5} className="p-6 text-center text-gray-400">No campaigns found.</td></tr>
               ) : announcements.map(ann => (
-                <tr key={ann.id} className="hover:bg-gray-50 dark:bg-gray-950 transition-colors">
+                <tr key={ann.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950 transition-colors">
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-800 dark:text-gray-100">{ann.title}</div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Sent {ann._count?.occurrences || 0} times</div>
@@ -271,3 +271,4 @@ export default function Notifications() {
     </div>
   );
 }
+

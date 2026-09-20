@@ -9,12 +9,12 @@ export class EmailsService {
 
   constructor(private prisma: PrismaService) {
     this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'mail.nexviewconcept.com.ng',
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: false, // true for 465, false for other ports
+      host: process.env.SMTP_HOST || 'smtp.zoho.com',
+      port: Number(process.env.SMTP_PORT) || 465,
+      secure: true, // true for 465, false for other ports
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD || process.env.SMTP_PASS,
+        user: process.env.SMTP_USER || 'info@nexviewconcept.com.ng',
+        pass: process.env.SMTP_PASSWORD || process.env.SMTP_PASS || 'jTzxCfzNDx9M',
       },
       tls: {
         rejectUnauthorized: false
@@ -42,7 +42,8 @@ export class EmailsService {
 
     setTimeout(async () => {
       try {
-        const smtpUser = process.env.SMTP_USER;
+        const smtpUser = process.env.SMTP_USER || 'info@nexviewconcept.com.ng';
+        const smtpFromEmail = process.env.SMTP_FROM_EMAIL || 'info@nexviewconcept.com.ng';
         let fromName = process.env.SMTP_FROM_NAME || 'Nexview Concept Limited';
         
         if (senderEmail) {
@@ -56,7 +57,7 @@ export class EmailsService {
         }
         
         const mailOptions: any = {
-          from: `"${fromName}" <${smtpUser}>`,
+          from: `"${fromName}" <${smtpFromEmail}>`,
           replyTo: senderEmail || smtpUser,
           to: recipient,
           subject: subject,
@@ -110,13 +111,12 @@ export class EmailsService {
 
     setTimeout(async () => {
       try {
-        const smtpUser = process.env.SMTP_USER;
+        const smtpUser = process.env.SMTP_USER || 'info@nexviewconcept.com.ng';
+        const smtpFromEmail = process.env.SMTP_FROM_EMAIL || 'info@nexviewconcept.com.ng';
         let fromName = process.env.SMTP_FROM_NAME || 'Nexview Concept Limited';
         
-        // Try to infer from log subject or senderEmail if stored (it's not stored, so we fallback to default)
-        
         const mailOptions: any = {
-          from: `"${fromName}" <${smtpUser}>`,
+          from: `"${fromName}" <${smtpFromEmail}>`,
           to: log.recipient,
           subject: log.subject,
           html: log.template || `<p>${log.subject}</p>`
@@ -141,3 +141,5 @@ export class EmailsService {
     return { message: 'Email retry queued' };
   }
 }
+
+

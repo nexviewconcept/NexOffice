@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, Delete, Res, UseGuards, Query } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Delete, Patch, Res, UseGuards, Query } from '@nestjs/common';
 import { ReceiptsService } from './receipts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -35,8 +35,13 @@ export class ReceiptsController {
   }
 
   @Post(':id/send-email')
-  sendEmail(@Param('id') id: string) {
-    return this.receiptsService.sendReceiptEmail(id);
+  sendEmail(@Param('id') id: string, @Body() body: any) {
+    return this.receiptsService.sendReceiptEmail(id, body?.email);
+  }
+
+  @Post(':id/send-whatsapp')
+  sendWhatsapp(@Param('id') id: string, @Body() body: any) {
+    return this.receiptsService.sendWhatsappReceipt(id, body?.phone);
   }
 
   @Roles('SUPER_ADMIN')
@@ -44,4 +49,11 @@ export class ReceiptsController {
   deleteReceipt(@Param('id') id: string) {
     return this.receiptsService.deleteReceipt(id);
   }
+
+  @Roles('ADMIN', 'SUPER_ADMIN', 'DIRECTOR', 'MANAGER', 'HR')
+  @Patch(':id')
+  updateReceipt(@Param('id') id: string, @Body() data: any) {
+    return this.receiptsService.updateReceipt(id, data);
+  }
 }
+

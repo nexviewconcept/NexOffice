@@ -1,19 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { DocumentsService } from '../documents/documents.service';
+import { EmailsService } from '../emails/emails.service';
+import { WhatsappService } from '../whatsapp/whatsapp.service';
 
 @Injectable()
 export class CertificatesService {
   constructor(
     private prisma: PrismaService,
-    private documents: DocumentsService
+    private documents: DocumentsService,
+    private emails: EmailsService,
+    private whatsapp: WhatsappService
   ) {}
 
   async createCertificate(data: any) {
+    const shortId = Math.floor(100000 + Math.random() * 900000); // 6-digit number
     return this.prisma.certificate.create({
       data: {
         ...data,
-        certificateNumber: `NCL-CERT-${Date.now()}`
+        certificateNumber: `NCL-${shortId}`
       }
     });
   }
@@ -21,6 +26,13 @@ export class CertificatesService {
   async listCertificates() {
     return this.prisma.certificate.findMany({
       orderBy: { issueDate: 'desc' }
+    });
+  }
+
+  async updateCertificate(id: string, data: any) {
+    return this.prisma.certificate.update({
+      where: { id },
+      data
     });
   }
 
@@ -68,54 +80,60 @@ export class CertificatesService {
             
             .content-area {
               position: absolute;
-              top: 250px; left: 0; right: 0;
+              top: 190px; left: 0; right: 0;
               text-align: center;
               padding: 0 50px;
             }
             h1 { 
-              font-size: 64px; 
+              font-size: 54px; 
               font-weight: 800; 
               color: #FF0000; 
-              margin: 0 0 30px; 
+              margin: 0 0 15px; 
             }
             .certify-text { 
-              font-size: 28px; 
+              font-size: 22px; 
               font-weight: 400; 
-              margin-bottom: 30px; 
+              margin-bottom: 15px; 
             }
             .name-container {
               display: inline-block;
               border-bottom: 3px solid #FF0000;
               padding: 0 50px 10px;
-              margin-bottom: 20px;
+              margin-bottom: 15px;
             }
             .name { 
-              font-size: 64px; 
+              font-size: 48px; 
               font-weight: 800; 
               text-transform: uppercase;
               letter-spacing: 2px;
             }
+            .custom-note {
+              font-size: 20px;
+              color: #444;
+              margin-top: 10px;
+              margin-bottom: 20px;
+            }
             .reason { 
-              font-size: 24px; 
+              font-size: 20px; 
               font-weight: 400; 
-              line-height: 1.6;
+              line-height: 1.4;
               max-width: 800px;
               margin: 0 auto;
             }
             .date {
-              font-size: 20px;
+              font-size: 18px;
               font-weight: 600;
-              margin-top: 15px;
+              margin-top: 10px;
             }
             .period {
-              font-size: 20px;
+              font-size: 18px;
               display: block;
               margin-top: 5px;
               color: #444;
             }
             .skills {
-              font-size: 18px;
-              margin-top: 10px;
+              font-size: 16px;
+              margin-top: 8px;
               color: #555;
             }
             
@@ -163,7 +181,7 @@ export class CertificatesService {
               padding: 8px;
               display: inline-block;
             }
-            .qr { width: 85px; height: 85px; display: block; }
+            .qr { width: 105px; height: 105px; display: block; }
           </style>
         </head>
         <body>
@@ -176,7 +194,7 @@ export class CertificatesService {
               <span>Visit Us:</span><br/>
               www.nexviewconcept.com.ng<br/>
               <span>Contact Us:</span><br/>
-              support@nexviewconcept.com.ng
+              info@nexviewconcept.com.ng
             </div>
           </div>
           
@@ -187,6 +205,8 @@ export class CertificatesService {
             <div class="name-container">
               <div class="name">${cert.recipientName}</div>
             </div>
+            
+            ${cert.customNote ? `<div class="custom-note" style="${cert.isCustomNoteBold ? 'font-weight: 800;' : ''}">${cert.customNote}</div>` : ''}
             
             <div class="reason">
               has successfully fulfilled the requirements of the <strong>${cert.courseName}</strong>.<br/>
@@ -219,5 +239,47 @@ export class CertificatesService {
       </html>
     `;
     return this.documents.generatePdf(html, { landscape: true });
+  }
+
+  async emailCertificate(id: string, email: string) {
+    const cert = await this.prisma.certificate.findUnique({ where: { id }});
+    if (!cert) throw new NotFoundException('Certificate not found');
+
+    const pdfBuffer = await this.generatePdf(id);
+    const subject = `Your Certificate of Completion - ${cert.courseName}`;
+    const text = `Dear ${cert.recipientName},\n\nCongratulations! Please find attached your Certificate of Completion for ${cert.courseName}.\n\nBest Regards,\nNexview Concept Limited`;
+    
+    // We send using HTML to ensure it logs properly with emails service
+    const html = `<p>Dear ${cert.recipientName},</p><p>Congratulations! Please find attached your Certificate of Completion for <strong>${cert.courseName}</strong>.</p><p>Best Regards,<br/>Nexview Concept Limited</p>`;
+    
+    await this.emails.sendEmail(
+      email,
+      subject,
+      html,
+      undefined, // attachmentPath
+      'info@nexviewconcept.com.ng', // senderEmail
+      undefined, // bodyText
+      pdfBuffer,
+      `Certificate_${cert.certificateNumber}.pdf`
+    );
+
+    return { message: 'Certificate sent successfully' };
+  }
+
+  async whatsappCertificate(id: string, phone: string) {
+    const cert = await this.prisma.certificate.findUnique({ where: { id }});
+    if (!cert) throw new NotFoundException('Certificate not found');
+
+    const pdfBuffer = await this.generatePdf(id);
+    const caption = `Dear ${cert.recipientName},\n\nCongratulations! Please find attached your Certificate of Completion for ${cert.courseName}.\n\nBest Regards,\nNexview Concept Limited`;
+    
+    await this.whatsapp.sendDocument(
+      phone,
+      pdfBuffer,
+      `Certificate_${cert.certificateNumber}.pdf`,
+      caption
+    );
+
+    return { message: 'Certificate sent via WhatsApp successfully' };
   }
 }

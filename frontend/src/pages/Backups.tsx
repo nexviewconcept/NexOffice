@@ -101,7 +101,7 @@ export default function Backups() {
             ) : backups.length === 0 ? (
               <tr><td colSpan={4} className="p-8 text-center text-gray-500 dark:text-gray-400">No backups found.</td></tr>
             ) : backups.map((b, i) => (
-              <tr key={i} className="hover:bg-gray-50 dark:bg-gray-950">
+              <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-900 dark:bg-gray-950 transition-colors">
                 <td className="px-6 py-4 font-medium text-gray-800 dark:text-gray-100">{b.filename}</td>
                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{new Date(b.createdAt).toLocaleString()}</td>
                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{(b.size / 1024 / 1024).toFixed(2)} MB</td>
@@ -139,3 +139,5 @@ export default function Backups() {
     </div>
   );
 }
+
+

@@ -134,7 +134,7 @@ export default function Finance() {
             ) : expenses.length === 0 ? (
               <tr><td colSpan={6} className="p-8 text-center text-gray-400">No expenses recorded yet.</td></tr>
             ) : expenses.map(exp => (
-              <tr key={exp.id} className="hover:bg-gray-50 dark:bg-gray-950">
+              <tr key={exp.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-900 dark:bg-gray-950 transition-colors">
                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{new Date(exp.expenseDate).toLocaleDateString()}</td>
                 <td className="px-6 py-4">
                   <div className="font-medium text-gray-800 dark:text-gray-100">{exp.description}</div>
@@ -219,3 +219,5 @@ export default function Finance() {
     </div>
   );
 }
+
+

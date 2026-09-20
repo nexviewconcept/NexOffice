@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Res, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Delete, Res, UseGuards, Query } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -14,6 +14,12 @@ export class InvoicesController {
   @Post()
   create(@Body() data: any) {
     return this.invoicesService.createInvoice(data);
+  }
+
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
+  @Put(':id')
+  update(@Param('id') id: string, @Body() data: any) {
+    return this.invoicesService.updateInvoice(id, data);
   }
 
   @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
@@ -41,8 +47,13 @@ export class InvoicesController {
   }
 
   @Post(':id/send-email')
-  sendEmail(@Param('id') id: string) {
-    return this.invoicesService.sendInvoiceEmail(id);
+  sendEmail(@Param('id') id: string, @Body() body: any) {
+    return this.invoicesService.sendInvoiceEmail(id, body?.email);
+  }
+
+  @Post(':id/send-whatsapp')
+  sendWhatsapp(@Param('id') id: string, @Body() body: any) {
+    return this.invoicesService.sendWhatsappInvoice(id, body?.phone);
   }
 
   @Roles('SUPER_ADMIN')

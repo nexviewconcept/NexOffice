@@ -29,13 +29,26 @@ import { StudentsModule } from './students/students.module';
 import { CoursesModule } from './courses/courses.module';
 import { CorporateModule } from './corporate/corporate.module';
 
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AuditInterceptor } from './audit/audit.interceptor';
+
+import { WhatsappModule } from './whatsapp/whatsapp.module';
+
+import { TasksModule } from './tasks/tasks.module';
+
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
-    PrismaModule, AuthModule, UsersModule, StaffProfilesModule, DocumentsModule, ClientsModule, InvoicesModule, ReceiptsModule, InventoryModule, CertificatesModule, NotificationsModule, FilesModule, PublicVerificationModule, FinanceModule, EmailsModule, SettingsModule, AuditModule, BackupsModule, DashboardModule, PermissionsModule, TicketsModule, ServiceLogsModule, StudentsModule, CoursesModule, CorporateModule
+    PrismaModule, AuthModule, UsersModule, StaffProfilesModule, DocumentsModule, ClientsModule, InvoicesModule, ReceiptsModule, InventoryModule, CertificatesModule, NotificationsModule, FilesModule, PublicVerificationModule, FinanceModule, EmailsModule, SettingsModule, AuditModule, BackupsModule, DashboardModule, PermissionsModule, TicketsModule, ServiceLogsModule, StudentsModule, CoursesModule, CorporateModule, WhatsappModule, TasksModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
+    }
+  ],
 })
 export class AppModule {}

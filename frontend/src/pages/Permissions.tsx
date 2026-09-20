@@ -84,7 +84,7 @@ export default function Permissions() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {allPermissions.map(permission => (
-                <tr key={permission.id} className="hover:bg-gray-50 dark:bg-gray-950">
+                <tr key={permission.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-900 dark:bg-gray-950 transition-colors">
                   <td className="px-6 py-3 text-sm text-gray-800 dark:text-gray-100">
                     <div className="font-semibold">{permission.action}</div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">{permission.description}</div>
@@ -133,3 +133,5 @@ export default function Permissions() {
     </div>
   );
 }
+
+

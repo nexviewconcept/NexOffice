@@ -47,6 +47,8 @@ import Finance from './pages/Finance';
 import FileManager from './pages/FileManager';
 import EmailCenter from './pages/EmailCenter';
 import Settings from './pages/Settings';
+import Tasks from './pages/Tasks';
+import WhatsappSettings from './pages/WhatsappSettings';
 import AuditLogs from './pages/AuditLogs';
 import Users from './pages/Users';
 import Backups from './pages/Backups';
@@ -141,6 +143,8 @@ export default function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<Users />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="whatsapp-settings" element={<WhatsappSettings />} />
             <Route path="audit" element={<AuditLogs />} />
             <Route path="backups" element={<Backups />} />
             <Route path="permissions" element={<Permissions />} />

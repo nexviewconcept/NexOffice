@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Download, Loader2, Award, Eye } from 'lucide-react';
+import { Plus, Search, Download, Loader2, Award, Eye, Mail, MessageCircle, Edit } from 'lucide-react';
 import api from '../lib/api';
 import { Modal } from '../components/ui/Modal';
 
@@ -29,10 +29,23 @@ export default function Certificates() {
     startDate: '',
     endDate: '',
     skillsLearned: '',
+    customNote: '',
+    isCustomNoteBold: false,
     issueDate: new Date().toISOString().split('T')[0]
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [downloading, setDownloading] = useState<string | null>(null);
+  
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailingCertId, setEmailingCertId] = useState<string | null>(null);
+  const [studentEmail, setStudentEmail] = useState('');
+  const [emailing, setEmailing] = useState(false);
+
+  const [whatsappModalOpen, setWhatsappModalOpen] = useState(false);
+  const [whatsappCertId, setWhatsappCertId] = useState<string | null>(null);
+  const [studentPhone, setStudentPhone] = useState('');
+  const [whatsapping, setWhatsapping] = useState(false);
 
   useEffect(() => {
     fetchCertificates();
@@ -49,16 +62,24 @@ export default function Certificates() {
     }
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await api.post('/certificates', {
+      const payload = {
         ...formData,
         startDate: new Date(formData.startDate).toISOString(),
         endDate: formData.endDate ? new Date(formData.endDate).toISOString() : null,
         issueDate: new Date(formData.issueDate).toISOString()
-      });
+      };
+
+      if (editingId) {
+        await api.put(`/certificates/${editingId}`, payload);
+        setEditingId(null);
+      } else {
+        await api.post('/certificates', payload);
+      }
+
       setIsModalOpen(false);
       setFormData({ 
         recipientName: '', 
@@ -66,6 +87,8 @@ export default function Certificates() {
         startDate: '',
         endDate: '',
         skillsLearned: '',
+        customNote: '',
+        isCustomNoteBold: false,
         issueDate: new Date().toISOString().split('T')[0]
       });
       fetchCertificates();
@@ -74,6 +97,21 @@ export default function Certificates() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleEditClick = (cert: any) => {
+    setFormData({
+      recipientName: cert.recipientName,
+      courseName: cert.courseName,
+      startDate: new Date(cert.startDate).toISOString().split('T')[0],
+      endDate: cert.endDate ? new Date(cert.endDate).toISOString().split('T')[0] : '',
+      skillsLearned: cert.skillsLearned || '',
+      customNote: cert.customNote || '',
+      isCustomNoteBold: cert.isCustomNoteBold || false,
+      issueDate: new Date(cert.issueDate).toISOString().split('T')[0]
+    });
+    setEditingId(cert.id);
+    setIsModalOpen(true);
   };
 
   const handleDownload = async (id: string, action: 'download' | 'preview' = 'download') => {
@@ -113,6 +151,44 @@ export default function Certificates() {
     }
   };
 
+  const handleEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailingCertId || !studentEmail) return;
+    
+    setEmailing(true);
+    try {
+      await api.post(`/certificates/${emailingCertId}/email`, { email: studentEmail });
+      setEmailModalOpen(false);
+      setStudentEmail('');
+      setEmailingCertId(null);
+      alert('Certificate emailed successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to email certificate');
+    } finally {
+      setEmailing(false);
+    }
+  };
+
+  const handleWhatsapp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!whatsappCertId || !studentPhone) return;
+    
+    setWhatsapping(true);
+    try {
+      await api.post(`/certificates/${whatsappCertId}/whatsapp`, { phone: studentPhone });
+      setWhatsappModalOpen(false);
+      setStudentPhone('');
+      setWhatsappCertId(null);
+      alert('Certificate sent via WhatsApp successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to send certificate via WhatsApp. Check bot connection.');
+    } finally {
+      setWhatsapping(false);
+    }
+  };
+
   const filtered = certificates.filter(c => 
     c.recipientName.toLowerCase().includes(search.toLowerCase()) || 
     c.certificateNumber.toLowerCase().includes(search.toLowerCase())
@@ -131,8 +207,25 @@ export default function Certificates() {
         </button>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Generate New Certificate">
-        <form onSubmit={handleCreate} className="space-y-4">
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingId(null);
+          setFormData({ 
+            recipientName: '', 
+            courseName: '',
+            startDate: '',
+            endDate: '',
+            skillsLearned: '',
+            customNote: '',
+            isCustomNoteBold: false,
+            issueDate: new Date().toISOString().split('T')[0]
+          });
+        }} 
+        title={editingId ? "Edit Certificate" : "Generate New Certificate"}
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Recipient Name</label>
             <input required type="text" value={formData.recipientName} onChange={e => setFormData({...formData, recipientName: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#E50914] focus:border-[#E50914] outline-none" placeholder="John Doe" />
@@ -156,14 +249,25 @@ export default function Certificates() {
             <textarea value={formData.skillsLearned} onChange={e => setFormData({...formData, skillsLearned: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#E50914] focus:border-[#E50914] outline-none min-h-[80px]" placeholder="e.g. React, Node.js, Frontend Architecture..." />
           </div>
           <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Custom Note (Below Name) <span className="text-gray-400 font-normal">(Optional)</span></label>
+            <input type="text" value={formData.customNote} onChange={e => setFormData({...formData, customNote: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#E50914] focus:border-[#E50914] outline-none mb-2" placeholder="e.g. Best Student of the Year" />
+            <label className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+              <input type="checkbox" checked={formData.isCustomNoteBold} onChange={e => setFormData({...formData, isCustomNoteBold: e.target.checked})} className="mr-2 rounded text-[#E50914] focus:ring-[#E50914]" />
+              Make this note Bold
+            </label>
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Issue Date</label>
             <input required type="date" value={formData.issueDate} onChange={e => setFormData({...formData, issueDate: e.target.value})} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#E50914] focus:border-[#E50914] outline-none" />
           </div>
-          <div className="pt-4 flex justify-end gap-3">
-            <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-950 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">Cancel</button>
+          <div className="pt-4 flex justify-end gap-3 border-t border-gray-100 dark:border-gray-800">
+            <button type="button" onClick={() => {
+              setIsModalOpen(false);
+              setEditingId(null);
+            }} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-950 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">Cancel</button>
             <button type="submit" disabled={submitting} className="px-4 py-2 text-sm font-medium text-white bg-[#E50914] hover:bg-red-700 rounded-lg transition-colors flex items-center disabled:opacity-70">
-              {submitting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-              Generate
+              {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {editingId ? 'Save Changes' : 'Generate'}
             </button>
           </div>
         </form>
@@ -205,7 +309,7 @@ export default function Certificates() {
                 </tr>
               ) : (
                 filtered.map(cert => (
-                  <tr key={cert.id} className="hover:bg-gray-50 dark:bg-gray-950/50 transition-colors">
+                  <tr key={cert.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-950/50 transition-colors">
                     <td className="px-6 py-4 font-medium text-gray-800 dark:text-gray-100">
                       <div className="flex items-center">
                         <Award className="w-4 h-4 text-gray-400 mr-2" />
@@ -217,6 +321,27 @@ export default function Certificates() {
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{new Date(cert.issueDate || Date.now()).toLocaleDateString()}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
+                        <button 
+                          onClick={() => handleEditClick(cert)}
+                          className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 p-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center"
+                          title="Edit Certificate"
+                        >
+                          <Edit className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={() => { setEmailingCertId(cert.id); setEmailModalOpen(true); }}
+                          className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 p-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center"
+                          title="Email to Student"
+                        >
+                          <Mail className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={() => { setWhatsappCertId(cert.id); setWhatsappModalOpen(true); }}
+                          className="text-gray-600 dark:text-gray-400 hover:text-[#25D366] bg-gray-100 dark:bg-gray-800 hover:bg-green-50 p-2 rounded-lg text-sm font-medium transition-colors inline-flex items-center"
+                          title="Send via WhatsApp"
+                        >
+                          <MessageCircle className="w-5 h-5" />
+                        </button>
                         <button 
                           onClick={() => handleDownload(cert.id, 'preview')}
                           disabled={downloading === cert.id}
@@ -279,6 +404,61 @@ export default function Certificates() {
             </div>
           ) : null}
         </div>
+      </Modal>
+
+      <Modal 
+        isOpen={emailModalOpen} 
+        onClose={() => { setEmailModalOpen(false); setStudentEmail(''); setEmailingCertId(null); }} 
+        title="Email Certificate"
+      >
+        <form onSubmit={handleEmail} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Student's Email Address</label>
+            <input 
+              required 
+              type="email" 
+              value={studentEmail} 
+              onChange={e => setStudentEmail(e.target.value)} 
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#E50914] focus:border-[#E50914] outline-none" 
+              placeholder="student@example.com" 
+            />
+          </div>
+          <div className="pt-4 flex justify-end gap-3">
+            <button type="button" onClick={() => setEmailModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-950 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">Cancel</button>
+            <button type="submit" disabled={emailing} className="px-4 py-2 text-sm font-medium text-white bg-[#E50914] hover:bg-red-700 rounded-lg transition-colors flex items-center disabled:opacity-70">
+              {emailing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Mail className="w-4 h-4 mr-2" />}
+              Send Email
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal 
+        isOpen={whatsappModalOpen} 
+        onClose={() => { setWhatsappModalOpen(false); setStudentPhone(''); setWhatsappCertId(null); }} 
+        title="Send Certificate via WhatsApp"
+      >
+        <form onSubmit={handleWhatsapp} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Student's Phone Number</label>
+            <input 
+              required 
+              type="text" 
+              value={studentPhone} 
+              onChange={e => setStudentPhone(e.target.value)} 
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#25D366] focus:border-[#25D366] outline-none" 
+              placeholder="e.g. 08012345678" 
+            />
+            <p className="text-xs text-gray-500 mt-1">Number must be on WhatsApp. PDF will be sent as a document.</p>
+          </div>
+          <div className="pt-4 flex justify-end gap-3">
+            <button type="button" onClick={() => setWhatsappModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-950 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors">Cancel</button>
+            <button type="submit" disabled={whatsapping} className="px-4 py-2 text-sm font-medium text-white bg-[#25D366] hover:bg-green-600 rounded-lg transition-colors flex items-center disabled:opacity-70">
+              {whatsapping ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <MessageCircle className="w-4 h-4 mr-2" />}
+              Send WhatsApp
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

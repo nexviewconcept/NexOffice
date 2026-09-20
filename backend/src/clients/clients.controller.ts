@@ -27,13 +27,13 @@ export class ClientsController {
     return this.clientsService.findOne(id);
   }
 
-  @Roles('SUPER_ADMIN', 'DIRECTOR')
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
   @Put(':id')
   update(@Param('id') id: string, @Body() updateClientDto: any) {
     return this.clientsService.updateClient(id, updateClientDto);
   }
 
-  @Roles('SUPER_ADMIN', 'DIRECTOR')
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.clientsService.deleteClient(id);

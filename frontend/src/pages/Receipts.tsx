@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, Eye, FileText, Trash2, CheckCircle, Mail } from 'lucide-react';
+import { Plus, Download, Mail, Search, Trash2, Eye, MessageCircle, CheckCircle, Loader2, Edit, FileText } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import api from '../lib/api';
 import { Modal } from '../components/ui/Modal';
@@ -10,6 +10,11 @@ export default function Receipts() {
 
   const [previewUrl, setPreviewUrl] = useState('');
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState<any>(null);
+  const [editAmount, setEditAmount] = useState('');
+  const [editMethod, setEditMethod] = useState('');
+  const [editNotes, setEditNotes] = useState('');
   const [previewLoading, setPreviewLoading] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -29,12 +34,25 @@ export default function Receipts() {
     }
   };
 
-  const handleSendEmail = async (id: string) => {
+  const handleSendEmail = async (rec: any) => {
     try {
-      await api.post(`/receipts/${id}/send-email`);
-      alert('Receipt sent to client successfully!');
+      const email = window.prompt("Enter Email address to send to:", rec.invoice?.client?.email || "");
+      if (email === null) return;
+      await api.post(`/receipts/${rec.id}/send-email`, { email });
+      alert('Receipt sent via Email successfully!');
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to send email');
+      alert(err.response?.data?.message || 'Failed to send via Email');
+    }
+  };
+
+  const handleSendWhatsapp = async (rec: any) => {
+    try {
+      const phone = window.prompt("Enter WhatsApp number (include country code, e.g. +234):", rec.invoice?.client?.phone || "");
+      if (phone === null) return;
+      await api.post(`/receipts/${rec.id}/send-whatsapp`, { phone });
+      alert('Receipt sent to client via WhatsApp successfully!');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to send via WhatsApp');
     }
   };
 
@@ -70,6 +88,17 @@ export default function Receipts() {
     }
   };
 
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await api.patch(`/receipts/${selectedReceipt.id}`, { amount: editAmount, paymentMethod: editMethod, notes: editNotes });
+      setEditModal(false);
+      fetchReceipts();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to edit receipt');
+    }
+  };
+
   const deleteReceipt = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this receipt?')) return;
     try {
@@ -102,7 +131,7 @@ export default function Receipts() {
             {loading ? (
               <tr><td colSpan={6} className="p-8 text-center text-gray-500 dark:text-gray-400">Loading...</td></tr>
             ) : receipts.map(rec => (
-              <tr key={rec.id} className="hover:bg-gray-50 dark:bg-gray-950">
+              <tr key={rec.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-900 dark:bg-gray-950 transition-colors">
                 <td className="px-6 py-4 font-semibold text-gray-700 dark:text-gray-300 flex items-center">
                   <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
                   {rec.receiptNumber}
@@ -123,10 +152,16 @@ export default function Receipts() {
                       <Eye className="w-5 h-5" />
                     </button>
                     <button 
-                      onClick={() => handleSendEmail(rec.id)}
-                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Send Email to Client"
+                      onClick={() => handleSendEmail(rec)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Send Email to Client"
                     >
                       <Mail className="w-5 h-5" />
+                    </button>
+                    <button 
+                      onClick={() => handleSendWhatsapp(rec)}
+                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Send WhatsApp to Client"
+                    >
+                      <MessageCircle className="w-5 h-5" />
                     </button>
                     <button 
                       onClick={() => handleDownload(rec.id, 'download')}
@@ -134,13 +169,11 @@ export default function Receipts() {
                     >
                       <Download className="w-5 h-5" />
                     </button>
-                    {user?.roles?.includes('SUPER_ADMIN') && (
-                      <button
-                        onClick={() => deleteReceipt(rec.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete Receipt"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                    {user?.roles?.some(r => ['SUPER_ADMIN', 'ADMIN', 'DIRECTOR', 'MANAGER'].includes(r)) && (
+                      <>
+                        <button onClick={() => { setSelectedReceipt(rec); setEditAmount(rec.amount); setEditMethod(rec.paymentMethod); setEditNotes(rec.notes || ''); setEditModal(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit Receipt"><Edit className="w-5 h-5" /></button>
+                        <button onClick={() => deleteReceipt(rec.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete Receipt"><Trash2 className="w-5 h-5" /></button>
+                      </>
                     )}
                   </div>
                 </td>
@@ -168,6 +201,35 @@ export default function Receipts() {
           ) : null}
         </div>
       </Modal>
+      <Modal isOpen={editModal} onClose={() => setEditModal(false)} title="Edit Receipt">
+        <form onSubmit={handleEditSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount Paid (₦)</label>
+            <input required type="number" step="0.01" value={editAmount} onChange={e => setEditAmount(e.target.value)} className="w-full px-3 py-2 border rounded-lg text-xl font-bold text-gray-800 dark:text-gray-100" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Method</label>
+            <select value={editMethod} onChange={e => setEditMethod(e.target.value)} className="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-900">
+              <option value="BANK_TRANSFER">Bank Transfer</option>
+              <option value="CASH">Cash</option>
+              <option value="CHEQUE">Cheque</option>
+              <option value="POS">POS</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes (Transaction ID, etc)</label>
+            <input type="text" value={editNotes} onChange={e => setEditNotes(e.target.value)} className="w-full px-3 py-2 border rounded-lg" placeholder="Transaction ID..." />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button type="button" onClick={() => setEditModal(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-950">Cancel</button>
+            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Changes</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
+
+
+
+
