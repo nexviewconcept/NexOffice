@@ -70,7 +70,7 @@ export default function WhatsappSettings() {
                 NexOffice is actively connected to WhatsApp. System alerts, invoices, and updates can now be sent via WhatsApp automatically.
               </p>
             </div>
-            <Button onClick={handleLogout} variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50 mt-4 border-red-200">
+            <Button onClick={handleLogout}  className="text-red-600 hover:text-red-700 hover:bg-red-50 mt-4 border-red-200">
               <LogOut className="w-4 h-4 mr-2" /> Disconnect Number
             </Button>
           </div>
@@ -85,7 +85,7 @@ export default function WhatsappSettings() {
                 <li>Point your phone to this screen to capture the QR code.</li>
               </ol>
               <div className="pt-4">
-                <Button onClick={fetchStatus} variant="outline" className="w-full">
+                <Button onClick={fetchStatus}  className="w-full">
                   <RefreshCw className="w-4 h-4 mr-2" /> Check Connection Status
                 </Button>
               </div>
@@ -107,3 +107,4 @@ export default function WhatsappSettings() {
     </div>
   );
 }
+

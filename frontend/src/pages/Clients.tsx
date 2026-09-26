@@ -29,7 +29,7 @@ export default function Clients() {
     try {
       const res = await api.get('/clients');
       setClients(res.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err); alert(err.response?.data?.message || err.message || "Failed to save client");
     } finally {
       setLoading(false);
@@ -49,7 +49,7 @@ export default function Clients() {
       setEditingId(null);
       setFormData({ name: '', email: '', phone: '', address: '' });
       fetchClients();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err); alert(err.response?.data?.message || err.message || "Failed to save client");
     } finally {
       setSubmitting(false);
@@ -72,7 +72,7 @@ export default function Clients() {
     try {
       await api.delete(`/clients/${id}`);
       fetchClients();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err); alert(err.response?.data?.message || err.message || "Failed to save client");
     }
   };
@@ -177,6 +177,7 @@ export default function Clients() {
     </div>
   );
 }
+
 
 
 

@@ -93,7 +93,7 @@ export default function Receipts() {
     try {
       await api.patch(`/receipts/${selectedReceipt.id}`, { amount: editAmount, paymentMethod: editMethod, notes: editNotes });
       setEditModal(false);
-      fetchReceipts();
+      fetchData();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to edit receipt');
     }
@@ -229,6 +229,7 @@ export default function Receipts() {
     </div>
   );
 }
+
 
 
 
