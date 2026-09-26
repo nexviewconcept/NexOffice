@@ -60,7 +60,7 @@ export default function Backups() {
   };
 
   const downloadBackup = (filename: string) => {
-    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/v1/backups/${filename}/download?token=${localStorage.getItem('token')}`;
+    window.location.href = https://nexoffice-api.fly.dev/api/v1/backups/${filename}/download?token=${localStorage.getItem('token')}`;
   };
 
   return (
@@ -139,5 +139,6 @@ export default function Backups() {
     </div>
   );
 }
+
 
 

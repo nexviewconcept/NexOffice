@@ -43,7 +43,7 @@ export default function StudentProfile() {
         <div className="px-8 pb-8">
           <div className="-mt-10 mb-6">
             {profile?.photoUrl ? (
-              <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${profile.photoUrl}`} alt="Profile" className="w-20 h-20 rounded-full border-4 border-white dark:border-gray-800 object-cover" />
+              <img src={https://nexoffice-api.fly.dev${profile.photoUrl}`} alt="Profile" className="w-20 h-20 rounded-full border-4 border-white dark:border-gray-800 object-cover" />
             ) : (
               <div className="w-20 h-20 rounded-full border-4 border-white dark:border-gray-800 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                 <User className="w-8 h-8 text-gray-400" />
@@ -83,3 +83,4 @@ export default function StudentProfile() {
     </div>
   );
 }
+

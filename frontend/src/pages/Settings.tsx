@@ -130,7 +130,7 @@ export default function Settings() {
                 <div className="flex items-center gap-6 mb-8">
                   <div className="relative">
                     {profile.photoUrl ? (
-                      <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${`profile.photoUrl}`} alt="Profile" className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm" />
+                      <img src={https://nexoffice-api.fly.dev${`profile.photoUrl}`} alt="Profile" className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm" />
                     ) : (
                       <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 border-4 border-white shadow-sm">
                         <User className="w-10 h-10" />
@@ -210,4 +210,5 @@ export default function Settings() {
     </div>
   );
 }
+
 

@@ -84,7 +84,7 @@ export default function VerifyStaff() {
 
             {data.photoUrl ? (
               <img 
-                src={data.photoUrl.startsWith('http') ? data.photoUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${data.photoUrl}`}
+                src={data.photoUrl.startsWith('http') ? data.photoUrl : https://nexoffice-api.fly.dev${data.photoUrl}`}
                 alt="Profile" 
                 className={`w-32 h-32 rounded-full object-cover mx-auto mb-4 border-4 ${isActive ? 'border-green-100' : 'border-red-100'}`}
               />
@@ -118,3 +118,4 @@ export default function VerifyStaff() {
     </div>
   );
 }
+

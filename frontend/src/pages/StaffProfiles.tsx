@@ -228,7 +228,7 @@ export default function StaffProfiles() {
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         {profile.photoUrl ? (
-                          <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${`profile.photoUrl}`} alt="Profile" className="w-8 h-8 rounded-full object-cover mr-3 border border-gray-200 dark:border-gray-700" />
+                          <img src={https://nexoffice-api.fly.dev${`profile.photoUrl}`} alt="Profile" className="w-8 h-8 rounded-full object-cover mr-3 border border-gray-200 dark:border-gray-700" />
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 dark:text-gray-400 font-bold text-xs mr-3">
                             {profile.firstName[0]}{profile.lastName[0]}
@@ -325,4 +325,5 @@ export default function StaffProfiles() {
     </div>
   );
 }
+
 
