@@ -54,8 +54,15 @@ let DocumentsService = class DocumentsService {
     cachedLogo = null;
     cachedBlankCert = null;
     cachedMdSign = null;
+    cachedBrowser = null;
     constructor(prisma) {
         this.prisma = prisma;
+    }
+    async onModuleDestroy() {
+        if (this.cachedBrowser) {
+            await this.cachedBrowser.close().catch(e => console.error(e));
+            this.cachedBrowser = null;
+        }
     }
     getLogoBase64() {
         if (this.cachedLogo)
@@ -105,15 +112,22 @@ let DocumentsService = class DocumentsService {
         }
         return '';
     }
+    async getBrowser() {
+        if (this.cachedBrowser && this.cachedBrowser.isConnected()) {
+            return this.cachedBrowser;
+        }
+        this.cachedBrowser = await puppeteer.launch({
+            headless: true,
+            executablePath: 'D:\\NexPortal\\NexOffice\\chrome\\win64-152.0.7977.75\\chrome-win64\\chrome.exe',
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security', '--disable-dev-shm-usage']
+        });
+        return this.cachedBrowser;
+    }
     async generatePdf(htmlContent, options = {}) {
-        let browser;
+        let page;
         try {
-            browser = await puppeteer.launch({
-                headless: true,
-                executablePath: 'D:\\NexPortal\\NexOffice\\chrome\\win64-152.0.7977.75\\chrome-win64\\chrome.exe',
-                args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security']
-            });
-            const page = await browser.newPage();
+            const browser = await this.getBrowser();
+            page = await browser.newPage();
             await page.setContent(htmlContent, { waitUntil: 'domcontentloaded', timeout: 15000 });
             const pdfBuffer = await page.pdf({
                 format: 'A4',
@@ -124,11 +138,18 @@ let DocumentsService = class DocumentsService {
         }
         catch (error) {
             console.error('PDF Generation Error:', error);
+            if (this.cachedBrowser) {
+                try {
+                    await this.cachedBrowser.close();
+                }
+                catch (e) { }
+                this.cachedBrowser = null;
+            }
             throw new common_1.InternalServerErrorException('Failed to generate PDF');
         }
         finally {
-            if (browser)
-                await browser.close();
+            if (page)
+                await page.close().catch(e => console.error(e));
         }
     }
     async generateQrCode(text) {

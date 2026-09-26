@@ -38,11 +38,17 @@ let ReceiptsController = class ReceiptsController {
         });
         res.end(pdfBuffer);
     }
-    sendEmail(id) {
-        return this.receiptsService.sendReceiptEmail(id);
+    sendEmail(id, body) {
+        return this.receiptsService.sendReceiptEmail(id, body?.email);
+    }
+    sendWhatsapp(id, body) {
+        return this.receiptsService.sendWhatsappReceipt(id, body?.phone);
     }
     deleteReceipt(id) {
         return this.receiptsService.deleteReceipt(id);
+    }
+    updateReceipt(id, data) {
+        return this.receiptsService.updateReceipt(id, data);
     }
 };
 exports.ReceiptsController = ReceiptsController;
@@ -74,10 +80,19 @@ __decorate([
 __decorate([
     (0, common_1.Post)(':id/send-email'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ReceiptsController.prototype, "sendEmail", null);
+__decorate([
+    (0, common_1.Post)(':id/send-whatsapp'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ReceiptsController.prototype, "sendWhatsapp", null);
 __decorate([
     (0, roles_decorator_1.Roles)('SUPER_ADMIN'),
     (0, common_1.Delete)(':id'),
@@ -86,6 +101,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ReceiptsController.prototype, "deleteReceipt", null);
+__decorate([
+    (0, roles_decorator_1.Roles)('ADMIN', 'SUPER_ADMIN', 'DIRECTOR', 'MANAGER', 'HR'),
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ReceiptsController.prototype, "updateReceipt", null);
 exports.ReceiptsController = ReceiptsController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, common_1.Controller)('api/v1/receipts'),

@@ -64,7 +64,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "findOne", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -73,7 +73,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "update", null);
 __decorate([
-    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

@@ -8,9 +8,9 @@ export declare class NotificationsController {
         createdAt: Date;
         updatedAt: Date;
         audience: string;
+        message: string;
         startDate: Date;
         title: string;
-        message: string;
         recurrence: string;
         channel: string;
         repeatEmail: boolean;
@@ -27,9 +27,9 @@ export declare class NotificationsController {
         createdAt: Date;
         updatedAt: Date;
         audience: string;
+        message: string;
         startDate: Date;
         title: string;
-        message: string;
         recurrence: string;
         channel: string;
         repeatEmail: boolean;
@@ -42,9 +42,9 @@ export declare class NotificationsController {
         createdAt: Date;
         updatedAt: Date;
         audience: string;
+        message: string;
         startDate: Date;
         title: string;
-        message: string;
         recurrence: string;
         channel: string;
         repeatEmail: boolean;

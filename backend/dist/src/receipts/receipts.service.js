@@ -14,14 +14,17 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const documents_service_1 = require("../documents/documents.service");
 const emails_service_1 = require("../emails/emails.service");
+const whatsapp_service_1 = require("../whatsapp/whatsapp.service");
 let ReceiptsService = class ReceiptsService {
     prisma;
     documents;
     emails;
-    constructor(prisma, documents, emails) {
+    whatsapp;
+    constructor(prisma, documents, emails, whatsapp) {
         this.prisma = prisma;
         this.documents = documents;
         this.emails = emails;
+        this.whatsapp = whatsapp;
     }
     async createReceipt(data) {
         const { invoiceId, amount, paymentMethod, notes } = data;
@@ -176,7 +179,7 @@ let ReceiptsService = class ReceiptsService {
     `;
         return this.documents.generatePdf(html);
     }
-    async sendReceiptEmail(id) {
+    async sendReceiptEmail(id, customEmail) {
         const receipt = await this.prisma.receipt.findUnique({
             where: { id },
             include: { invoice: { include: { client: true } } }
@@ -184,22 +187,88 @@ let ReceiptsService = class ReceiptsService {
         if (!receipt || !receipt.invoice || !receipt.invoice.client) {
             throw new common_1.NotFoundException('Receipt or Client not found');
         }
-        if (!receipt.invoice.client.email) {
+        const emailToUse = customEmail || receipt.invoice.client.email;
+        if (!emailToUse) {
             throw new common_1.BadRequestException('Client does not have an email address');
         }
         const pdfBuffer = await this.generateReceiptPdf(id);
         const subject = `Receipt ${receipt.receiptNumber} from Nexview Concept Limited`;
         const body = `Dear ${receipt.invoice.client.name},\n\nPlease find attached your payment receipt (${receipt.receiptNumber}) for the amount of ₦${receipt.amount.toLocaleString()}.\n\nThank you for your business.`;
-        await this.emails.sendEmail(receipt.invoice.client.email, subject, undefined, undefined, undefined, body, pdfBuffer, `${receipt.receiptNumber}.pdf`);
+        await this.emails.sendEmail(emailToUse, subject, undefined, undefined, undefined, body, pdfBuffer, `${receipt.receiptNumber}.pdf`);
         return { message: 'Receipt queued for emailing successfully' };
     }
+    async sendWhatsappReceipt(id, customPhone) {
+        const receipt = await this.prisma.receipt.findUnique({
+            where: { id },
+            include: { invoice: { include: { client: true } } }
+        });
+        if (!receipt || !receipt.invoice || !receipt.invoice.client) {
+            throw new common_1.NotFoundException('Receipt or Client not found');
+        }
+        const phoneToUse = customPhone || receipt.invoice.client.phone;
+        if (!phoneToUse) {
+            throw new common_1.BadRequestException('Client does not have a phone number');
+        }
+        const message = "Dear $(${receipt.invoice.client.name}),\n\nThank you for your payment of ₦$(${receipt.amount.toLocaleString()}) towards Invoice $(${receipt.invoice.invoiceNumber}).\n\nReceipt No: $(${receipt.receiptNumber})\nDate: $(${receipt.paymentDate.toLocaleDateString()})\n\nBest regards,\nNexview Concept Limited";
+        await this.whatsapp.sendMessage(phoneToUse, message);
+        return { message: 'Receipt sent via WhatsApp successfully' };
+    }
+    async updateReceipt(id, data) {
+        return this.prisma.$transaction(async (tx) => {
+            const receipt = await tx.receipt.update({
+                where: { id },
+                data: {
+                    amount: data.amount ? Number(data.amount) : undefined,
+                    paymentMethod: data.paymentMethod,
+                    notes: data.notes
+                },
+                include: { invoice: { include: { receipts: true } } }
+            });
+            if (receipt.invoice && receipt.invoiceId) {
+                const totalPaid = receipt.invoice.receipts.reduce((sum, r) => sum + r.amount, 0);
+                let newStatus = 'PARTIALLY_PAID';
+                if (totalPaid >= receipt.invoice.total - 0.01) {
+                    newStatus = 'PAID';
+                }
+                else if (totalPaid <= 0.01) {
+                    newStatus = 'DRAFT';
+                }
+                await tx.invoice.update({
+                    where: { id: receipt.invoiceId },
+                    data: { status: newStatus }
+                });
+            }
+            return receipt;
+        });
+    }
     async deleteReceipt(id) {
-        return this.prisma.receipt.delete({ where: { id } });
+        return this.prisma.$transaction(async (tx) => {
+            const receipt = await tx.receipt.findUnique({ where: { id }, include: { invoice: true } });
+            if (!receipt)
+                throw new common_1.NotFoundException('Receipt not found');
+            await tx.receipt.delete({ where: { id } });
+            if (receipt.invoice && receipt.invoiceId) {
+                const remainingReceipts = await tx.receipt.findMany({ where: { invoiceId: receipt.invoiceId } });
+                const totalPaid = remainingReceipts.reduce((sum, r) => sum + r.amount, 0);
+                let newStatus = 'PARTIALLY_PAID';
+                if (totalPaid >= receipt.invoice.total - 0.01) {
+                    newStatus = 'PAID';
+                }
+                else if (totalPaid <= 0.01) {
+                    newStatus = 'DRAFT';
+                }
+                await tx.invoice.update({
+                    where: { id: receipt.invoiceId },
+                    data: { status: newStatus }
+                });
+            }
+            return { message: 'Deleted successfully' };
+        });
     }
 };
 exports.ReceiptsService = ReceiptsService;
 exports.ReceiptsService = ReceiptsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService, documents_service_1.DocumentsService, emails_service_1.EmailsService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService, documents_service_1.DocumentsService, emails_service_1.EmailsService, whatsapp_service_1.WhatsappService])
 ], ReceiptsService);
 //# sourceMappingURL=receipts.service.js.map

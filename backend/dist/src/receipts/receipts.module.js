@@ -12,12 +12,13 @@ const receipts_service_1 = require("./receipts.service");
 const receipts_controller_1 = require("./receipts.controller");
 const documents_module_1 = require("../documents/documents.module");
 const emails_module_1 = require("../emails/emails.module");
+const whatsapp_module_1 = require("../whatsapp/whatsapp.module");
 let ReceiptsModule = class ReceiptsModule {
 };
 exports.ReceiptsModule = ReceiptsModule;
 exports.ReceiptsModule = ReceiptsModule = __decorate([
     (0, common_1.Module)({
-        imports: [documents_module_1.DocumentsModule, emails_module_1.EmailsModule],
+        imports: [documents_module_1.DocumentsModule, emails_module_1.EmailsModule, whatsapp_module_1.WhatsappModule],
         controllers: [receipts_controller_1.ReceiptsController],
         providers: [receipts_service_1.ReceiptsService]
     })

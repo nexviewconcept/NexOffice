@@ -11,12 +11,14 @@ const common_1 = require("@nestjs/common");
 const certificates_controller_1 = require("./certificates.controller");
 const certificates_service_1 = require("./certificates.service");
 const documents_module_1 = require("../documents/documents.module");
+const emails_module_1 = require("../emails/emails.module");
+const whatsapp_module_1 = require("../whatsapp/whatsapp.module");
 let CertificatesModule = class CertificatesModule {
 };
 exports.CertificatesModule = CertificatesModule;
 exports.CertificatesModule = CertificatesModule = __decorate([
     (0, common_1.Module)({
-        imports: [documents_module_1.DocumentsModule],
+        imports: [documents_module_1.DocumentsModule, emails_module_1.EmailsModule, whatsapp_module_1.WhatsappModule],
         controllers: [certificates_controller_1.CertificatesController],
         providers: [certificates_service_1.CertificatesService]
     })

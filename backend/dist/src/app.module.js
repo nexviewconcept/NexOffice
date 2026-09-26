@@ -37,6 +37,10 @@ const service_logs_module_1 = require("./service-logs/service-logs.module");
 const students_module_1 = require("./students/students.module");
 const courses_module_1 = require("./courses/courses.module");
 const corporate_module_1 = require("./corporate/corporate.module");
+const core_1 = require("@nestjs/core");
+const audit_interceptor_1 = require("./audit/audit.interceptor");
+const whatsapp_module_1 = require("./whatsapp/whatsapp.module");
+const tasks_module_1 = require("./tasks/tasks.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -45,10 +49,16 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             schedule_1.ScheduleModule.forRoot(),
             throttler_1.ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
-            prisma_module_1.PrismaModule, auth_module_1.AuthModule, users_module_1.UsersModule, staff_profiles_module_1.StaffProfilesModule, documents_module_1.DocumentsModule, clients_module_1.ClientsModule, invoices_module_1.InvoicesModule, receipts_module_1.ReceiptsModule, inventory_module_1.InventoryModule, certificates_module_1.CertificatesModule, notifications_module_1.NotificationsModule, files_module_1.FilesModule, public_verification_module_1.PublicVerificationModule, finance_module_1.FinanceModule, emails_module_1.EmailsModule, settings_module_1.SettingsModule, audit_module_1.AuditModule, backups_module_1.BackupsModule, dashboard_module_1.DashboardModule, permissions_module_1.PermissionsModule, tickets_module_1.TicketsModule, service_logs_module_1.ServiceLogsModule, students_module_1.StudentsModule, courses_module_1.CoursesModule, corporate_module_1.CorporateModule
+            prisma_module_1.PrismaModule, auth_module_1.AuthModule, users_module_1.UsersModule, staff_profiles_module_1.StaffProfilesModule, documents_module_1.DocumentsModule, clients_module_1.ClientsModule, invoices_module_1.InvoicesModule, receipts_module_1.ReceiptsModule, inventory_module_1.InventoryModule, certificates_module_1.CertificatesModule, notifications_module_1.NotificationsModule, files_module_1.FilesModule, public_verification_module_1.PublicVerificationModule, finance_module_1.FinanceModule, emails_module_1.EmailsModule, settings_module_1.SettingsModule, audit_module_1.AuditModule, backups_module_1.BackupsModule, dashboard_module_1.DashboardModule, permissions_module_1.PermissionsModule, tickets_module_1.TicketsModule, service_logs_module_1.ServiceLogsModule, students_module_1.StudentsModule, courses_module_1.CoursesModule, corporate_module_1.CorporateModule, whatsapp_module_1.WhatsappModule, tasks_module_1.TasksModule
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: audit_interceptor_1.AuditInterceptor,
+            }
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

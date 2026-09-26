@@ -18,7 +18,8 @@ let ClientsService = class ClientsService {
         this.prisma = prisma;
     }
     async createClient(data) {
-        return this.prisma.client.create({ data });
+        const { company, ...validData } = data;
+        return this.prisma.client.create({ data: validData });
     }
     async findAll() {
         return this.prisma.client.findMany();
@@ -30,7 +31,8 @@ let ClientsService = class ClientsService {
         return client;
     }
     async updateClient(id, data) {
-        return this.prisma.client.update({ where: { id }, data });
+        const { company, ...validData } = data;
+        return this.prisma.client.update({ where: { id }, data: validData });
     }
     async deleteClient(id) {
         return this.prisma.client.delete({ where: { id } });

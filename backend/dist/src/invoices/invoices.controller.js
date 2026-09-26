@@ -26,6 +26,9 @@ let InvoicesController = class InvoicesController {
     create(data) {
         return this.invoicesService.createInvoice(data);
     }
+    update(id, data) {
+        return this.invoicesService.updateInvoice(id, data);
+    }
     findAll() {
         return this.invoicesService.findAll();
     }
@@ -41,8 +44,11 @@ let InvoicesController = class InvoicesController {
         });
         res.end(pdfBuffer);
     }
-    sendEmail(id) {
-        return this.invoicesService.sendInvoiceEmail(id);
+    sendEmail(id, body) {
+        return this.invoicesService.sendInvoiceEmail(id, body?.email);
+    }
+    sendWhatsapp(id, body) {
+        return this.invoicesService.sendWhatsappInvoice(id, body?.phone);
     }
     deleteInvoice(id) {
         return this.invoicesService.deleteInvoice(id);
@@ -57,6 +63,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], InvoicesController.prototype, "create", null);
+__decorate([
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], InvoicesController.prototype, "update", null);
 __decorate([
     (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),
     (0, common_1.Get)(),
@@ -85,10 +100,19 @@ __decorate([
 __decorate([
     (0, common_1.Post)(':id/send-email'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], InvoicesController.prototype, "sendEmail", null);
+__decorate([
+    (0, common_1.Post)(':id/send-whatsapp'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], InvoicesController.prototype, "sendWhatsapp", null);
 __decorate([
     (0, roles_decorator_1.Roles)('SUPER_ADMIN'),
     (0, common_1.Delete)(':id'),

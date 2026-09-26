@@ -29,6 +29,9 @@ let CertificatesController = class CertificatesController {
     findAll() {
         return this.certificatesService.listCertificates();
     }
+    update(id, data) {
+        return this.certificatesService.updateCertificate(id, data);
+    }
     async downloadPdf(id, res, action) {
         const pdfBuffer = await this.certificatesService.generatePdf(id);
         const disposition = action === 'preview' ? 'inline' : 'attachment';
@@ -37,6 +40,12 @@ let CertificatesController = class CertificatesController {
             'Content-Disposition': `${disposition}; filename=certificate.pdf`,
         });
         res.end(pdfBuffer);
+    }
+    emailCertificate(id, email) {
+        return this.certificatesService.emailCertificate(id, email);
+    }
+    whatsappCertificate(id, phone) {
+        return this.certificatesService.whatsappCertificate(id, phone);
     }
 };
 exports.CertificatesController = CertificatesController;
@@ -60,6 +69,16 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], CertificatesController.prototype, "update", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),
     (0, common_1.Get)(':id/pdf'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Res)()),
@@ -68,6 +87,26 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, String]),
     __metadata("design:returntype", Promise)
 ], CertificatesController.prototype, "downloadPdf", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),
+    (0, common_1.Post)(':id/email'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('email')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], CertificatesController.prototype, "emailCertificate", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),
+    (0, common_1.Post)(':id/whatsapp'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('phone')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], CertificatesController.prototype, "whatsappCertificate", null);
 exports.CertificatesController = CertificatesController = __decorate([
     (0, common_1.Controller)('api/v1/certificates'),
     __metadata("design:paramtypes", [certificates_service_1.CertificatesService])

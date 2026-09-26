@@ -54,11 +54,11 @@ let EmailsService = EmailsService_1 = class EmailsService {
     constructor(prisma) {
         this.prisma = prisma;
         this.transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || 'mail.nexviewconcept.com.ng',
-            port: Number(process.env.SMTP_PORT) || 587,
-            secure: false,
+            host: process.env.SMTP_HOST || 'smtp.zoho.com',
+            port: Number(process.env.SMTP_PORT) || 465,
+            secure: true,
             auth: {
-                user: process.env.SMTP_USER,
+                user: process.env.SMTP_USER || 'info@nexviewconcept.com.ng',
                 pass: process.env.SMTP_PASSWORD || process.env.SMTP_PASS,
             },
             tls: {
@@ -83,7 +83,8 @@ let EmailsService = EmailsService_1 = class EmailsService {
         });
         setTimeout(async () => {
             try {
-                const smtpUser = process.env.SMTP_USER;
+                const smtpUser = process.env.SMTP_USER || 'info@nexviewconcept.com.ng';
+                const smtpFromEmail = process.env.SMTP_FROM_EMAIL || 'info@nexviewconcept.com.ng';
                 let fromName = process.env.SMTP_FROM_NAME || 'Nexview Concept Limited';
                 if (senderEmail) {
                     if (senderEmail.includes('md@')) {
@@ -97,7 +98,7 @@ let EmailsService = EmailsService_1 = class EmailsService {
                     }
                 }
                 const mailOptions = {
-                    from: `"${fromName}" <${smtpUser}>`,
+                    from: `"${fromName}" <${smtpFromEmail}>`,
                     replyTo: senderEmail || smtpUser,
                     to: recipient,
                     subject: subject,
@@ -145,10 +146,11 @@ let EmailsService = EmailsService_1 = class EmailsService {
         });
         setTimeout(async () => {
             try {
-                const smtpUser = process.env.SMTP_USER;
+                const smtpUser = process.env.SMTP_USER || 'info@nexviewconcept.com.ng';
+                const smtpFromEmail = process.env.SMTP_FROM_EMAIL || 'info@nexviewconcept.com.ng';
                 let fromName = process.env.SMTP_FROM_NAME || 'Nexview Concept Limited';
                 const mailOptions = {
-                    from: `"${fromName}" <${smtpUser}>`,
+                    from: `"${fromName}" <${smtpFromEmail}>`,
                     to: log.recipient,
                     subject: log.subject,
                     html: log.template || `<p>${log.subject}</p>`
