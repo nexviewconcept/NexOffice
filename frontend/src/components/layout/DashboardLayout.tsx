@@ -163,7 +163,7 @@ export default function DashboardLayout() {
               className="w-10 h-10 bg-[#E50914] text-white rounded-full flex items-center justify-center font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 hover:opacity-90 transition overflow-hidden"
             >
               {user?.staffProfile?.photoUrl ? (
-                <img src={`http://localhost:3000${user.staffProfile.photoUrl}`} alt="Profile" className="w-full h-full object-cover" />
+                <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${`user.staffProfile.photoUrl}`} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 user?.email?.charAt(0).toUpperCase() || 'SA'
               )}
@@ -207,3 +207,4 @@ export default function DashboardLayout() {
     </div>
   );
 }
+
