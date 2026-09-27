@@ -30,13 +30,12 @@ export default function EmailCenter() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    fetchInbox();
-  }, [selectedAccount]);
+    fetchLogs();
+  }, []);
 
   useEffect(() => {
-    fetchLogs();
     fetchInbox();
-  }, []);
+  }, [selectedAccount]);
 
   const fetchLogs = async () => {
     try {
@@ -53,7 +52,7 @@ export default function EmailCenter() {
     setInboxLoading(true);
     setInboxError('');
     try {
-      const res = await api.get(/emails/inbox?account=${selectedAccount});
+      const res = await api.get(`/emails/inbox?account=${selectedAccount}`);
       setInboxEmails(res.data);
     } catch (err: any) {
       console.error(err);
@@ -176,7 +175,14 @@ export default function EmailCenter() {
       {activeTab === 'inbox' && (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
           <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50">
-            <div className="flex items-center gap-3"><h3 className="font-semibold text-gray-800 dark:text-gray-100">Zoho Mail Inbox</h3><select value={selectedAccount} onChange={e => { setSelectedAccount(e.target.value); }} className="text-sm border rounded px-2 py-1 bg-white dark:bg-gray-800"><option value="info@nexviewconcept.com.ng">info@</option><option value="md@nexviewconcept.com.ng">md@</option><option value="support@nexviewconcept.com.ng">support@</option></select></div>
+            <div className="flex items-center gap-3">
+              <h3 className="font-semibold text-gray-800 dark:text-gray-100">Zoho Mail Inbox</h3>
+              <select value={selectedAccount} onChange={e => setSelectedAccount(e.target.value)} className="text-sm border rounded px-2 py-1 bg-white dark:bg-gray-800">
+                <option value="info@nexviewconcept.com.ng">info@nexviewconcept.com.ng</option>
+                <option value="md@nexviewconcept.com.ng">md@nexviewconcept.com.ng</option>
+                <option value="support@nexviewconcept.com.ng">support@nexviewconcept.com.ng</option>
+              </select>
+            </div>
             <button 
               onClick={() => fetchInbox()} 
               disabled={inboxLoading}
@@ -189,7 +195,7 @@ export default function EmailCenter() {
           {inboxError && (
             <div className="p-4 bg-orange-50 border-b border-orange-100 text-orange-800 text-sm">
               <strong>Warning:</strong> {inboxError}
-              <p className="mt-1 text-xs">You might need to log into Zoho Mail, go to Settings -> Mail Accounts -> IMAP Access, and enable it.</p>
+              <p className="mt-1 text-xs">You might need to log into Zoho Mail, go to Settings -&gt; Mail Accounts -&gt; IMAP Access, and enable it.</p>
             </div>
           )}
 
@@ -360,5 +366,3 @@ export default function EmailCenter() {
     </div>
   );
 }
-
-
