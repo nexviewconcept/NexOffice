@@ -7,6 +7,7 @@ import { Modal } from '../components/ui/Modal';
 export default function EmailCenter() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'inbox' | 'sent'>('inbox');
+  const [selectedAccount, setSelectedAccount] = useState('info@nexviewconcept.com.ng');
   
   const [logs, setLogs] = useState<any[]>([]);
   const [inboxEmails, setInboxEmails] = useState<any[]>([]);
@@ -29,6 +30,10 @@ export default function EmailCenter() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
+    fetchInbox();
+  }, [selectedAccount]);
+
+  useEffect(() => {
     fetchLogs();
     fetchInbox();
   }, []);
@@ -48,7 +53,7 @@ export default function EmailCenter() {
     setInboxLoading(true);
     setInboxError('');
     try {
-      const res = await api.get('/emails/inbox');
+      const res = await api.get(/emails/inbox?account=${selectedAccount});
       setInboxEmails(res.data);
     } catch (err: any) {
       console.error(err);
@@ -171,9 +176,9 @@ export default function EmailCenter() {
       {activeTab === 'inbox' && (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
           <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50">
-            <h3 className="font-semibold text-gray-800 dark:text-gray-100">Zoho Mail Inbox</h3>
+            <div className="flex items-center gap-3"><h3 className="font-semibold text-gray-800 dark:text-gray-100">Zoho Mail Inbox</h3><select value={selectedAccount} onChange={e => { setSelectedAccount(e.target.value); }} className="text-sm border rounded px-2 py-1 bg-white dark:bg-gray-800"><option value="info@nexviewconcept.com.ng">info@</option><option value="md@nexviewconcept.com.ng">md@</option><option value="support@nexviewconcept.com.ng">support@</option></select></div>
             <button 
-              onClick={fetchInbox} 
+              onClick={() => fetchInbox()} 
               disabled={inboxLoading}
               className="text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 flex items-center gap-1 px-3 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             >
@@ -355,3 +360,5 @@ export default function EmailCenter() {
     </div>
   );
 }
+
+

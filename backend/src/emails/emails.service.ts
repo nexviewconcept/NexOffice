@@ -15,7 +15,7 @@ export class EmailsService {
       port: Number(process.env.SMTP_PORT) || 465,
       secure: true, // true for 465, false for other ports
       auth: {
-        user: process.env.SMTP_USER || 'info@nexviewconcept.com.ng',
+        user: account || process.env.SMTP_USER || 'info@nexviewconcept.com.ng',
         pass: process.env.SMTP_PASSWORD || process.env.SMTP_PASS ,
       },
       tls: {
@@ -143,10 +143,10 @@ export class EmailsService {
     return { message: 'Email retry queued' };
   }
 
-  async getInbox() {
+  async getInbox(account?: string) {
     const config = {
       imap: {
-        user: process.env.SMTP_USER || 'info@nexviewconcept.com.ng',
+        user: account || process.env.SMTP_USER || 'info@nexviewconcept.com.ng',
         password: process.env.SMTP_PASSWORD || process.env.SMTP_PASS || 'jTzxCfzNDx9M',
         host: 'imap.zoho.com',
         port: 993,
@@ -210,6 +210,7 @@ export class EmailsService {
     }
   }
 }
+
 
 
 

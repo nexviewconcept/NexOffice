@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, UseGuards, Body, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Body, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { EmailsService } from './emails.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -49,7 +49,8 @@ export class EmailsController {
 
   @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
   @Get('inbox')
-  getInbox() {
-    return this.emailsService.getInbox();
+  getInbox(@Query('account') account?: string) {
+    return this.emailsService.getInbox(account);
   }
 }
+
