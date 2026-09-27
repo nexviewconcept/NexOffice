@@ -46,4 +46,10 @@ export class EmailsController {
   retryEmail(@Param('id') id: string) {
     return this.emailsService.retryEmail(id);
   }
+
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR')
+  @Get('inbox')
+  getInbox() {
+    return this.emailsService.getInbox();
+  }
 }
