@@ -88,6 +88,9 @@ export default function DashboardLayout() {
           <NavLink to="files" className={navClass}>
             <Folder className="w-5 h-5 mr-3" /> File Manager
           </NavLink>
+          <NavLink to="converter" className={navClass}>
+            <FileText className="w-5 h-5 mr-3" /> JPG to PDF Converter
+          </NavLink>
           <NavLink to="emails" className={navClass}>
             <Mail className="w-5 h-5 mr-3" /> Email Center
           </NavLink>

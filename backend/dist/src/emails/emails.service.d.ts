@@ -19,4 +19,12 @@ export declare class EmailsService {
     retryEmail(id: string): Promise<{
         message: string;
     }>;
+    getInbox(account?: string): Promise<{
+        uid: number;
+        from: string;
+        subject: string;
+        date: Date | undefined;
+        text: string;
+        html: string;
+    }[]>;
 }

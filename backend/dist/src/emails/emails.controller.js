@@ -36,6 +36,9 @@ let EmailsController = class EmailsController {
     retryEmail(id) {
         return this.emailsService.retryEmail(id);
     }
+    getInbox(account) {
+        return this.emailsService.getInbox(account);
+    }
 };
 exports.EmailsController = EmailsController;
 __decorate([
@@ -71,6 +74,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], EmailsController.prototype, "retryEmail", null);
+__decorate([
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'),
+    (0, common_1.Get)('inbox'),
+    __param(0, (0, common_1.Query)('account')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], EmailsController.prototype, "getInbox", null);
 exports.EmailsController = EmailsController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, common_1.Controller)('api/v1/emails'),

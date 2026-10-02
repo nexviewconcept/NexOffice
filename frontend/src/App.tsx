@@ -52,6 +52,7 @@ import WhatsappSettings from './pages/WhatsappSettings';
 import AuditLogs from './pages/AuditLogs';
 import Users from './pages/Users';
 import Backups from './pages/Backups';
+import JpgToPdf from './pages/JpgToPdf';
 import Permissions from './pages/Permissions';
 import SupportTickets from './pages/SupportTickets';
 import ServiceLogs from './pages/ServiceLogs';
@@ -147,6 +148,7 @@ export default function App() {
             <Route path="whatsapp-settings" element={<WhatsappSettings />} />
             <Route path="audit" element={<AuditLogs />} />
             <Route path="backups" element={<Backups />} />
+          <Route path="converter" element={<JpgToPdf />} />
             <Route path="permissions" element={<Permissions />} />
             {/* Admins also get access to all operational routes below */}
             <Route path="staff" element={<StaffProfiles />} />
@@ -179,3 +181,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
