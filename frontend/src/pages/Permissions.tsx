@@ -126,7 +126,7 @@ export default function Permissions() {
         </div>
       </div>
       
-      <div className="mt-6 p-4 bg-blue-50 text-blue-800 rounded-lg text-sm border border-blue-100">
+      <div className="mt-6 p-4 bg-red-50 text-blue-800 rounded-lg text-sm border border-blue-100">
         <p className="font-semibold mb-1">Note:</p>
         <p>The <strong>SUPER_ADMIN</strong> role always has full access to all modules and actions. It is not shown in this matrix.</p>
       </div>

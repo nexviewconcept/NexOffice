@@ -25,7 +25,7 @@ export default function VerifyInvoice() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg max-w-md w-full border-t-8 border-blue-500">
+      <div className="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg max-w-md w-full border-t-8 border-red-500">
         <div className="text-center mb-6">
           <img src="/logo.png" alt="Nexview Concept" className="h-10 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Invoice Verification</h2>
@@ -33,7 +33,7 @@ export default function VerifyInvoice() {
 
         {loading ? (
           <div className="flex flex-col items-center py-8">
-            <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
+            <Loader2 className="w-12 h-12 text-red-500 animate-spin mb-4" />
             <p className="text-gray-500 dark:text-gray-400">Verifying Official Invoice...</p>
           </div>
         ) : error ? (
@@ -54,13 +54,13 @@ export default function VerifyInvoice() {
               </div>
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-bold mb-1">Total Amount</p>
-                <p className="font-bold text-2xl text-blue-600">₦{data.total.toLocaleString()}</p>
+                <p className="font-bold text-2xl text-[#E50914]">₦{data.total.toLocaleString()}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-bold mb-1">Status</p>
                 <span className={`px-2.5 py-1 rounded-md text-xs font-semibold ${
                       data.status === 'PAID' ? 'bg-green-100 text-green-700' : 
-                      data.status === 'PARTIALLY_PAID' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'
+                      data.status === 'PARTIALLY_PAID' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
                     }`}>
                   {data.status.replace('_', ' ')}
                 </span>

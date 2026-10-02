@@ -102,7 +102,7 @@ export default function Students() {
                       <button 
                         onClick={() => handleDownload(student.id)}
                         title="Download ID Card"
-                        className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
+                        className="p-2 text-[#E50914] hover:bg-red-50 dark:hover:bg-blue-900/20 rounded-lg">
                         <DownloadCloud className="w-4 h-4" />
                       </button>
                       <button className="p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">

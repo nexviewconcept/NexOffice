@@ -260,10 +260,10 @@ export default function StaffProfiles() {
                         />
                         <label 
                           htmlFor={`photo-upload-${profile.id}`}
-                          className="cursor-pointer text-gray-400 hover:text-blue-500 transition-colors inline-flex mr-2"
+                          className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors inline-flex mr-2"
                           title="Upload Photo"
                         >
-                          {uploading === profile.id ? <Loader2 className="w-4 h-4 animate-spin text-blue-500" /> : <Upload className="w-4 h-4" />}
+                          {uploading === profile.id ? <Loader2 className="w-4 h-4 animate-spin text-red-500" /> : <Upload className="w-4 h-4" />}
                         </label>
                       </div>
 

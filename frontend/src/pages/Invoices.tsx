@@ -153,7 +153,7 @@ export default function Invoices() {
   const getStatusColor = (status: string) => {
     switch(status) {
       case 'PAID': return 'bg-green-100 text-green-700';
-      case 'PARTIALLY_PAID': return 'bg-blue-100 text-blue-700';
+      case 'PARTIALLY_PAID': return 'bg-red-100 text-red-700';
       case 'SENT': return 'bg-yellow-100 text-yellow-700';
       case 'DRAFT': return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
       default: return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';
@@ -228,7 +228,7 @@ export default function Invoices() {
                     </button>
                     <button 
                       onClick={() => handleDownload(inv.id, 'download')}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Download PDF"
+                      className="p-2 text-[#E50914] hover:bg-red-50 rounded-lg transition" title="Download PDF"
                     >
                       <Download className="w-5 h-5" />
                     </button>

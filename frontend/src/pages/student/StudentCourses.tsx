@@ -22,7 +22,7 @@ export default function StudentCourses() {
 
   const statusIcon = (status: string) => {
     if (status === 'COMPLETED') return <CheckCircle className="w-5 h-5 text-green-500" />;
-    return <Clock className="w-5 h-5 text-blue-500" />;
+    return <Clock className="w-5 h-5 text-red-500" />;
   };
 
   return (
@@ -57,7 +57,7 @@ export default function StudentCourses() {
               </div>
               <div className="flex items-center gap-2">
                 {statusIcon(enr.status)}
-                <span className={`text-sm font-medium ${enr.status === 'COMPLETED' ? 'text-green-600' : 'text-blue-600'}`}>
+                <span className={`text-sm font-medium ${enr.status === 'COMPLETED' ? 'text-green-600' : 'text-[#E50914]'}`}>
                   {enr.status}
                 </span>
               </div>

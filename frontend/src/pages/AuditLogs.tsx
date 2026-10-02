@@ -32,7 +32,7 @@ export default function AuditLogs() {
 
   const getActionColor = (action: string) => {
     if (action.includes('CREATE') || action.includes('UPLOAD')) return 'bg-green-100 text-green-700';
-    if (action.includes('UPDATE')) return 'bg-blue-100 text-blue-700';
+    if (action.includes('UPDATE')) return 'bg-red-100 text-red-700';
     if (action.includes('DELETE')) return 'bg-red-100 text-red-700';
     if (action.includes('LOGIN')) return 'bg-purple-100 text-purple-700';
     return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300';

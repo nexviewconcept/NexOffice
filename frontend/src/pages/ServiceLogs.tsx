@@ -147,7 +147,7 @@ export default function ServiceLogs() {
         </div>
 
         <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex items-center gap-4">
-          <div className="p-3 bg-blue-50 dark:bg-blue-950/40 text-blue-600 rounded-xl">
+          <div className="p-3 bg-red-50 dark:bg-blue-950/40 text-[#E50914] rounded-xl">
             <UserCheck className="w-6 h-6" />
           </div>
           <div>

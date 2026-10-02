@@ -150,13 +150,13 @@ export default function Landing() {
                 <Link to="/verify" className="absolute top-[25%] left-[0%] w-[320px] bg-[#0c0c11]/95 backdrop-blur-2xl border border-gray-700/80 rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden panel-2 animate-float-2 panel-hover cursor-pointer group flex flex-col">
                   <div className="p-4 border-b border-gray-800/80 flex items-center justify-between bg-gradient-to-r from-blue-900/10 to-transparent">
                      <div className="flex items-center gap-3">
-                       <div className="p-1.5 bg-blue-500/10 rounded-lg border border-blue-500/20 group-hover:bg-blue-500/20 transition-colors flex items-center justify-center">
+                       <div className="p-1.5 bg-red-500/10 rounded-lg border border-red-500/20 group-hover:bg-red-500/20 transition-colors flex items-center justify-center">
                          <img src="/nverify-logo.png" alt="NVerify" className="w-5 h-5 object-contain drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]" />
                        </div>
                        <div>
                          <div className="text-sm font-bold text-white tracking-tight">NVerify Identity Sync</div>
-                         <div className="text-[9px] text-blue-400 font-mono flex items-center gap-1.5 mt-0.5">
-                           <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" /> LIVE STREAM
+                         <div className="text-[9px] text-red-400 font-mono flex items-center gap-1.5 mt-0.5">
+                           <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> LIVE STREAM
                          </div>
                        </div>
                      </div>
@@ -187,7 +187,7 @@ export default function Landing() {
                       </div>
                     </div>
                   </div>
-                  <div className="absolute inset-0 border border-blue-500/0 group-hover:border-blue-500/30 rounded-2xl transition-colors duration-500 pointer-events-none shadow-[inset_0_0_20px_rgba(59,130,246,0)] group-hover:shadow-[inset_0_0_20px_rgba(59,130,246,0.1)]" />
+                  <div className="absolute inset-0 border border-red-500/0 group-hover:border-red-500/30 rounded-2xl transition-colors duration-500 pointer-events-none shadow-[inset_0_0_20px_rgba(59,130,246,0)] group-hover:shadow-[inset_0_0_20px_rgba(59,130,246,0.1)]" />
                 </Link>
 
                 {/* FOREGROUND LAYER: NDesk Client */}
@@ -253,14 +253,14 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* NVerify */}
             <div className="bg-white dark:bg-gray-900/50 p-10 rounded-[2rem] shadow-lg shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-800 flex flex-col items-start transition-all hover:-translate-y-1 hover:shadow-xl dark:hover:border-gray-700">
-              <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mb-6 border border-blue-100 dark:border-blue-800/50">
-                <ShieldCheck className="h-7 w-7 text-blue-600 dark:text-blue-400" />
+              <div className="w-14 h-14 rounded-2xl bg-red-50 dark:bg-blue-900/20 flex items-center justify-center mb-6 border border-blue-100 dark:border-blue-800/50">
+                <ShieldCheck className="h-7 w-7 text-[#E50914] dark:text-red-400" />
               </div>
               <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">NVerify Portal</h4>
               <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed flex-grow">
                 The public-facing gateway for individuals and businesses. Register companies, verify identities, and access our digital services securely.
               </p>
-              <Link to="/verify" className="inline-flex items-center text-blue-600 dark:text-blue-400 font-bold hover:text-blue-700 dark:hover:text-blue-300 group">
+              <Link to="/verify" className="inline-flex items-center text-[#E50914] dark:text-red-400 font-bold hover:text-red-700 dark:hover:text-blue-300 group">
                 Open NVerify <ChevronRight className="ml-1 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>

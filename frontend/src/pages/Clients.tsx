@@ -164,7 +164,7 @@ export default function Clients() {
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{client.phone || '-'}</td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{client.address || '-'}</td>
                     <td className="px-6 py-4 text-right">
-                      <button onClick={() => handleEditClick(client)} className="text-gray-400 hover:text-blue-500 mx-2 transition-colors"><Edit className="w-4 h-4" /></button>
+                      <button onClick={() => handleEditClick(client)} className="text-gray-400 hover:text-red-500 mx-2 transition-colors"><Edit className="w-4 h-4" /></button>
                       <button onClick={() => handleDeleteClient(client.id)} className="text-gray-400 hover:text-red-500 transition-colors"><Trash className="w-4 h-4" /></button>
                     </td>
                   </tr>

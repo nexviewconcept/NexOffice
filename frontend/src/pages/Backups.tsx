@@ -109,7 +109,7 @@ export default function Backups() {
                   <div className="flex justify-end gap-2">
                     <button 
                       onClick={() => downloadBackup(b.filename)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Download"
+                      className="p-2 text-[#E50914] hover:bg-red-50 rounded-lg transition" title="Download"
                     >
                       <Download className="w-4 h-4" />
                     </button>
@@ -133,7 +133,7 @@ export default function Backups() {
         </table>
       </div>
       
-      <div className="mt-4 text-sm text-gray-500 dark:text-gray-400 p-4 bg-blue-50 text-blue-800 rounded-lg border border-blue-100">
+      <div className="mt-4 text-sm text-gray-500 dark:text-gray-400 p-4 bg-red-50 text-blue-800 rounded-lg border border-blue-100">
         <strong>Information:</strong> The system is configured to autonomously generate a backup every day at midnight and send it to the administrator email address.
       </div>
     </div>

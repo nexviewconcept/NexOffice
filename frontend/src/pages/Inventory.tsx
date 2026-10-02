@@ -92,7 +92,7 @@ export default function Inventory() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex items-center">
-          <div className="p-3 bg-blue-50 text-blue-600 rounded-lg mr-4"><Package className="w-6 h-6" /></div>
+          <div className="p-3 bg-red-50 text-[#E50914] rounded-lg mr-4"><Package className="w-6 h-6" /></div>
           <div><p className="text-sm text-gray-500 dark:text-gray-400">Total Items</p><p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{totalItems}</p></div>
         </div>
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex items-center">
@@ -143,7 +143,7 @@ export default function Inventory() {
                     <div className="flex justify-end gap-2">
                       <button 
                         onClick={() => { setSelectedItem(item); setTransModal(true); setTransError(''); setTransData({ type: 'OUT', quantity: 1, notes: '' }); }}
-                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition border border-blue-100" title="Record Transaction"
+                        className="p-1.5 text-[#E50914] hover:bg-red-50 rounded transition border border-blue-100" title="Record Transaction"
                       >
                         <RefreshCw className="w-4 h-4" />
                       </button>
@@ -227,7 +227,7 @@ export default function Inventory() {
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={() => setTransModal(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-950">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Submit Log</button>
+            <button type="submit" className="px-4 py-2 bg-[#E50914] text-white rounded-lg hover:bg-red-700">Submit Log</button>
           </div>
         </form>
       </Modal>
@@ -243,7 +243,7 @@ export default function Inventory() {
               <div className="flex items-center">
                 {log.type === 'IN' ? <ArrowUpRight className="w-5 h-5 text-green-500 mr-3" /> : 
                  log.type === 'OUT' ? <ArrowDownRight className="w-5 h-5 text-red-500 mr-3" /> : 
-                 <RefreshCw className="w-5 h-5 text-blue-500 mr-3" />}
+                 <RefreshCw className="w-5 h-5 text-red-500 mr-3" />}
                 <div>
                   <div className="font-semibold text-gray-800 dark:text-gray-100 text-sm">
                     {log.type === 'IN' ? 'Restocked' : log.type === 'OUT' ? 'Used/Sent Out' : 'Adjusted'} 

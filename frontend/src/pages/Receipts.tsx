@@ -153,7 +153,7 @@ export default function Receipts() {
                     </button>
                     <button 
                       onClick={() => handleSendEmail(rec)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Send Email to Client"
+                      className="p-2 text-[#E50914] hover:bg-red-50 rounded-lg transition" title="Send Email to Client"
                     >
                       <Mail className="w-5 h-5" />
                     </button>
@@ -165,13 +165,13 @@ export default function Receipts() {
                     </button>
                     <button 
                       onClick={() => handleDownload(rec.id, 'download')}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Download PDF"
+                      className="p-2 text-[#E50914] hover:bg-red-50 rounded-lg transition" title="Download PDF"
                     >
                       <Download className="w-5 h-5" />
                     </button>
                     {user?.roles?.some(r => ['SUPER_ADMIN', 'ADMIN', 'DIRECTOR', 'MANAGER'].includes(r)) && (
                       <>
-                        <button onClick={() => { setSelectedReceipt(rec); setEditAmount(rec.amount); setEditMethod(rec.paymentMethod); setEditNotes(rec.notes || ''); setEditModal(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit Receipt"><Edit className="w-5 h-5" /></button>
+                        <button onClick={() => { setSelectedReceipt(rec); setEditAmount(rec.amount); setEditMethod(rec.paymentMethod); setEditNotes(rec.notes || ''); setEditModal(true); }} className="p-2 text-[#E50914] hover:bg-red-50 rounded-lg transition" title="Edit Receipt"><Edit className="w-5 h-5" /></button>
                         <button onClick={() => deleteReceipt(rec.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete Receipt"><Trash2 className="w-5 h-5" /></button>
                       </>
                     )}
@@ -222,7 +222,7 @@ export default function Receipts() {
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={() => setEditModal(false)} className="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:bg-gray-950">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Changes</button>
+            <button type="submit" className="px-4 py-2 bg-[#E50914] text-white rounded-lg hover:bg-red-700">Save Changes</button>
           </div>
         </form>
       </Modal>

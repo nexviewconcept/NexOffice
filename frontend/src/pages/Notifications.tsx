@@ -198,7 +198,7 @@ export default function Notifications() {
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Sent {ann._count?.occurrences || 0} times</div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-xs font-semibold">{ann.recurrence.replace('_', ' ')}</span>
+                    <span className="bg-red-50 text-red-700 px-2.5 py-1 rounded-md text-xs font-semibold">{ann.recurrence.replace('_', ' ')}</span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{ann.audience}</td>
                   <td className="px-6 py-4">

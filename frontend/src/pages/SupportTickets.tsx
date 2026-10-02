@@ -90,12 +90,12 @@ export default function SupportTickets() {
     switch (status) {
       case 'OPEN': return <span className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-medium">Open</span>;
       case 'CLOSED': return <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium">Closed</span>;
-      default: return <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium">{status}</span>;
+      default: return <span className="px-2 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium">{status}</span>;
     }
   };
 
   if (loading) {
-    return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>;
+    return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-red-500" /></div>;
   }
 
   return (
@@ -152,12 +152,12 @@ export default function SupportTickets() {
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
-            <input required type="text" value={formData.subject} onChange={e => setFormData({...formData, subject: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" placeholder="Brief summary of the issue" />
+            <input required type="text" value={formData.subject} onChange={e => setFormData({...formData, subject: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-red-500" placeholder="Brief summary of the issue" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
-              <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+              <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-red-500">
                 <option value="GENERAL">General Query</option>
                 <option value="TECHNICAL">Technical Issue</option>
                 <option value="BILLING">Billing / Finance</option>
@@ -166,7 +166,7 @@ export default function SupportTickets() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Priority</label>
-              <select value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+              <select value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-red-500">
                 <option value="LOW">Low</option>
                 <option value="NORMAL">Normal</option>
                 <option value="HIGH">High</option>
@@ -176,9 +176,9 @@ export default function SupportTickets() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
-            <textarea required value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500 min-h-[120px]" placeholder="Describe your issue in detail..." />
+            <textarea required value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-red-500 min-h-[120px]" placeholder="Describe your issue in detail..." />
           </div>
-          <button type="submit" disabled={submitting} className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex justify-center items-center">
+          <button type="submit" disabled={submitting} className="w-full py-2 bg-[#E50914] text-white rounded-lg hover:bg-red-700 transition flex justify-center items-center">
             {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Submit Ticket'}
           </button>
         </form>
@@ -202,7 +202,7 @@ export default function SupportTickets() {
                     {msg.isStaff && <Shield className="w-3 h-3 text-red-500" />}
                     {msg.isStaff ? 'Support Team' : msg.user.staffProfile?.firstName || msg.user.email.split('@')[0]}
                   </span>
-                  <div className={`p-3 rounded-2xl max-w-[85%] text-sm ${msg.isStaff ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-tl-none'}`}>
+                  <div className={`p-3 rounded-2xl max-w-[85%] text-sm ${msg.isStaff ? 'bg-[#E50914] text-white rounded-tr-none' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-tl-none'}`}>
                     {msg.message}
                   </div>
                   <span className="text-[10px] text-gray-400 mt-1">{new Date(msg.createdAt).toLocaleTimeString()}</span>
@@ -218,9 +218,9 @@ export default function SupportTickets() {
                     value={replyMessage}
                     onChange={e => setReplyMessage(e.target.value)}
                     placeholder="Type official admin response..."
-                    className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-full focus:outline-none focus:border-blue-500 text-sm bg-gray-50 dark:bg-gray-950"
+                    className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-full focus:outline-none focus:border-red-500 text-sm bg-gray-50 dark:bg-gray-950"
                   />
-                  <button type="submit" disabled={replying || !replyMessage.trim()} className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition disabled:opacity-50">
+                  <button type="submit" disabled={replying || !replyMessage.trim()} className="p-2 bg-[#E50914] text-white rounded-full hover:bg-red-700 transition disabled:opacity-50">
                     {replying ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                   </button>
                 </form>
@@ -233,7 +233,7 @@ export default function SupportTickets() {
               <div className="mt-auto border-t border-gray-100 dark:border-gray-800 pt-4 text-center text-sm text-gray-500 dark:text-gray-400">
                 This ticket is closed.
                 {user?.roles?.some((r: string) => ['SUPER_ADMIN', 'DIRECTOR', 'OPERATOR'].includes(r)) && (
-                  <button onClick={() => updateStatus(selectedTicket.id, 'OPEN')} className="text-blue-600 hover:underline ml-2">Reopen</button>
+                  <button onClick={() => updateStatus(selectedTicket.id, 'OPEN')} className="text-[#E50914] hover:underline ml-2">Reopen</button>
                 )}
               </div>
             )}

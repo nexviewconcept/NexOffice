@@ -30,8 +30,8 @@ export default function StudentDashboard() {
         </div>
         
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl mr-4">
-            <CreditCard className="w-8 h-8 text-blue-600" />
+          <div className="bg-red-50 dark:bg-blue-900/20 p-4 rounded-xl mr-4">
+            <CreditCard className="w-8 h-8 text-[#E50914]" />
           </div>
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Pending Payments</p>
@@ -78,7 +78,7 @@ export default function StudentDashboard() {
             <div className="border border-gray-100 dark:border-gray-700 p-4 rounded-xl">
               <div className="flex justify-between items-center mb-2">
                 <h4 className="font-semibold text-gray-800 dark:text-white">Cybersecurity Fundamentals</h4>
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Starting Soon</span>
+                <span className="text-xs bg-red-100 text-blue-800 px-2 py-1 rounded-full">Starting Soon</span>
               </div>
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-1">
                 <div className="bg-[#E50914] h-2 rounded-full" style={{ width: '0%' }}></div>

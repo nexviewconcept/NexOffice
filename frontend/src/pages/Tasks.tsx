@@ -78,7 +78,7 @@ export default function Tasks() {
           </h1>
           <p className="text-gray-500 text-sm mt-1">Manage staff tasks and project progress.</p>
         </div>
-        <Button onClick={handleCreateTask} className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button onClick={handleCreateTask} className="bg-[#E50914] hover:bg-red-700 text-white">
           <Plus className="w-4 h-4 mr-2" /> New Task
         </Button>
       </div>
@@ -110,7 +110,7 @@ export default function Tasks() {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className={`bg-white dark:bg-gray-800 p-4 rounded-xl border ${snapshot.isDragging ? 'border-blue-500 shadow-xl scale-105' : 'border-gray-100 dark:border-gray-700 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'} transition-all group`}
+                              className={`bg-white dark:bg-gray-800 p-4 rounded-xl border ${snapshot.isDragging ? 'border-red-500 shadow-xl scale-105' : 'border-gray-100 dark:border-gray-700 shadow-sm hover:border-gray-300 dark:hover:border-gray-600'} transition-all group`}
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
@@ -118,7 +118,7 @@ export default function Tasks() {
                                     ? 'bg-red-100 text-red-700 dark:bg-red-900/30' 
                                     : task.priority === 'LOW' 
                                       ? 'bg-green-100 text-green-700' 
-                                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30'
+                                      : 'bg-red-100 text-red-700 dark:bg-blue-900/30'
                                 }`}>
                                   {task.priority}
                                 </span>

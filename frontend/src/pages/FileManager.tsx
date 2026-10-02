@@ -111,7 +111,7 @@ export default function FileManager() {
   };
 
   const getFileIcon = (mimeType: string) => {
-    if (mimeType.includes('image')) return <ImageIcon className="w-8 h-8 text-blue-500" />;
+    if (mimeType.includes('image')) return <ImageIcon className="w-8 h-8 text-red-500" />;
     if (mimeType.includes('pdf')) return <FileText className="w-8 h-8 text-red-500" />;
     if (mimeType.includes('zip') || mimeType.includes('compressed')) return <File className="w-8 h-8 text-yellow-500" />;
     return <File className="w-8 h-8 text-gray-500 dark:text-gray-400" />;
@@ -185,7 +185,7 @@ export default function FileManager() {
                         {getFileIcon(file.mimeType)}
                       </div>
                       <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => handleDownload(file.id, file.originalName, file.mimeType)} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded" title="Download">
+                        <button onClick={() => handleDownload(file.id, file.originalName, file.mimeType)} className="p-1.5 text-red-500 hover:bg-red-50 rounded" title="Download">
                           <Download className="w-4 h-4" />
                         </button>
                         <button onClick={() => handleDelete(file.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded" title="Delete">
