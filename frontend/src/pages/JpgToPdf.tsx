@@ -76,7 +76,7 @@ export default function JpgToPdf() {
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
-          <FileImage className="w-8 h-8 mr-3 text-blue-600" />
+          <FileImage className="w-8 h-8 mr-3 text-[#E50914]" />
           JPG to PDF Converter
         </h1>
         <p className="text-gray-500 mt-1">Easily convert multiple images into a single PDF document.</p>
@@ -85,7 +85,7 @@ export default function JpgToPdf() {
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
         
         {/* Upload Area */}
-        <label className="flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-blue-400 focus:outline-none dark:bg-gray-800 dark:border-gray-700">
+        <label className="flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-red-400 focus:outline-none dark:bg-gray-800 dark:border-gray-700">
             <span className="flex items-center space-x-2">
                 <Plus className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                 <span className="font-medium text-gray-600 dark:text-gray-400">
@@ -118,7 +118,7 @@ export default function JpgToPdf() {
               <button 
                 onClick={generatePDF}
                 disabled={generating}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium inline-flex items-center disabled:opacity-50"
+                className="px-6 py-2.5 bg-[#E50914] text-white rounded-lg hover:bg-red-700 font-medium inline-flex items-center disabled:opacity-50"
               >
                 {generating ? 'Generating PDF...' : (
                   <>
