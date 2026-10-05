@@ -55,9 +55,12 @@ export class AcceptanceLettersService {
 
   async generatePdf(id: string) {
     const letter = await this.findOne(id);
-    const settings = await this.prisma.systemSetting.findFirst();
+    const lh = await this.prisma.systemSetting.findUnique({ where: { key: 'letterhead' } });
+    const sig = await this.prisma.systemSetting.findUnique({ where: { key: 'signature' } });
+    const letterheadUrl = lh?.value;
+    const signatureUrl = sig?.value;
 
-    if (!settings?.letterheadUrl || !settings?.signatureUrl) {
+    if (!letterheadUrl || !signatureUrl) {
       throw new BadRequestException('System letterhead or signature not configured.');
     }
 
@@ -137,7 +140,7 @@ export class AcceptanceLettersService {
     <body>
       <div class="container">
         <div class="header">
-          <img src="${settings.letterheadUrl}" alt="Letterhead" />
+          <img src="${letterheadUrl}" alt="Letterhead" />
         </div>
         
         <div class="date">
@@ -167,7 +170,7 @@ export class AcceptanceLettersService {
 
         <div class="footer">
           <p>Yours faithfully,</p>
-          <img class="signature" src="${settings.signatureUrl}" alt="Signature" />
+          <img class="signature" src="${signatureUrl}" alt="Signature" />
           <p><b>MD/CEO</b><br/>Nexview Concept</p>
         </div>
 
@@ -182,7 +185,7 @@ export class AcceptanceLettersService {
     </html>
     `;
 
-    return this.documentsService.generateDocumentFromHtml(htmlContent);
+    return this.documentsService.generatePdf(htmlContent);
   }
 
   async sendEmail(id: string, email: string) {
@@ -220,3 +223,5 @@ export class AcceptanceLettersService {
     }
   }
 }
+
+

@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request, Response } from '@nestjs/common';
 import { AcceptanceLettersService } from './acceptance-letters.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('acceptance-letters')
 export class AcceptanceLettersController {
@@ -11,7 +11,7 @@ export class AcceptanceLettersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'MANAGER')
   @Post()
-  create(@Body() data: any, @Request() req) {
+  create(@Body() data: any, @Request() req: any) {
     return this.acceptanceLettersService.create(data, req.user);
   }
 
@@ -28,7 +28,7 @@ export class AcceptanceLettersController {
   }
 
   @Get(':id/pdf')
-  async getPdf(@Param('id') id: string, @Response() res) {
+  async getPdf(@Param('id') id: string, @Response() res: any) {
     const buffer = await this.acceptanceLettersService.generatePdf(id);
     res.set({
       'Content-Type': 'application/pdf',
@@ -59,3 +59,4 @@ export class AcceptanceLettersController {
     return this.acceptanceLettersService.remove(id);
   }
 }
+
