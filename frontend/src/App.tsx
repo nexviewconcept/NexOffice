@@ -23,6 +23,7 @@ import VerifyStaff from './pages/public/VerifyStaff';
 import VerifyReceipt from './pages/public/VerifyReceipt';
 import VerifyCert from './pages/public/VerifyCert';
 import VerifyInvoice from './pages/public/VerifyInvoice';
+import VerifyLetter from './pages/public/VerifyLetter';
 
 // Auth
 import Login from './pages/Login';
@@ -58,6 +59,7 @@ import SupportTickets from './pages/SupportTickets';
 import ServiceLogs from './pages/ServiceLogs';
 import Students from './pages/Students';
 import Courses from './pages/Courses';
+import ITLetters from './pages/ITLetters';
 
 export default function App() {
   const { theme } = useThemeStore();
@@ -123,6 +125,7 @@ export default function App() {
             <Route path="staff" element={<StaffProfiles />} />
             <Route path="students" element={<Students />} />
             <Route path="courses" element={<Courses />} />
+          <Route path="it-letters" element={<ITLetters />} />
             <Route path="clients" element={<Clients />} />
             <Route path="invoices" element={<Invoices />} />
             <Route path="receipts" element={<Receipts />} />
@@ -154,6 +157,7 @@ export default function App() {
             <Route path="staff" element={<StaffProfiles />} />
             <Route path="students" element={<Students />} />
             <Route path="courses" element={<Courses />} />
+          <Route path="it-letters" element={<ITLetters />} />
             <Route path="clients" element={<Clients />} />
             <Route path="invoices" element={<Invoices />} />
             <Route path="receipts" element={<Receipts />} />
@@ -181,4 +185,5 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
 
