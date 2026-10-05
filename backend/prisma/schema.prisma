@@ -422,3 +422,18 @@ model TaskComment {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+
+model AcceptanceLetter {
+  id               String   @id @default(uuid())
+  studentName      String
+  matricNumber     String
+  department       String
+  course           String
+  recipientAddress String   @db.Text
+  dateIssued       DateTime @default(now())
+  issuedBy         String?
+  qrCodeUrl        String?
+  status           String   @default("ISSUED") // ISSUED, REVOKED
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

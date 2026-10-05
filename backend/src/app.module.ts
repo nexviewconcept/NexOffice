@@ -24,6 +24,7 @@ import { BackupsModule } from './backups/backups.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { TicketsModule } from './tickets/tickets.module';
+import { AcceptanceLettersModule } from './acceptance-letters/acceptance-letters.module';
 import { ServiceLogsModule } from './service-logs/service-logs.module';
 import { StudentsModule } from './students/students.module';
 import { CoursesModule } from './courses/courses.module';
@@ -40,7 +41,8 @@ import { TasksModule } from './tasks/tasks.module';
   imports: [
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
-    PrismaModule, AuthModule, UsersModule, StaffProfilesModule, DocumentsModule, ClientsModule, InvoicesModule, ReceiptsModule, InventoryModule, CertificatesModule, NotificationsModule, FilesModule, PublicVerificationModule, FinanceModule, EmailsModule, SettingsModule, AuditModule, BackupsModule, DashboardModule, PermissionsModule, TicketsModule, ServiceLogsModule, StudentsModule, CoursesModule, CorporateModule, WhatsappModule, TasksModule
+    PrismaModule, AuthModule, UsersModule, StaffProfilesModule, DocumentsModule, ClientsModule, InvoicesModule, ReceiptsModule, InventoryModule, CertificatesModule, NotificationsModule, FilesModule, PublicVerificationModule, FinanceModule, EmailsModule, SettingsModule, AuditModule, BackupsModule, DashboardModule, PermissionsModule, TicketsModule,
+    AcceptanceLettersModule, ServiceLogsModule, StudentsModule, CoursesModule, CorporateModule, WhatsappModule, TasksModule
   ],
   controllers: [AppController],
   providers: [
@@ -52,3 +54,4 @@ import { TasksModule } from './tasks/tasks.module';
   ],
 })
 export class AppModule {}
+
