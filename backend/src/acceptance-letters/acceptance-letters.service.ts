@@ -193,11 +193,14 @@ export class AcceptanceLettersService {
     const pdfBuffer = await this.generatePdf(id);
 
     try {
-      await this.emailsService.sendEmailWithAttachment(
-        email,
-        'IT Acceptance Letter - Nexview Concept',
-        `Dear ${letter.studentName},\n\nPlease find attached your IT Acceptance Letter.\n\nBest regards,\nNexview Concept`,
-        pdfBuffer,
+      await this.emailsService.sendEmail(
+        email, 
+        'IT Acceptance Letter - Nexview Concept', 
+        undefined, 
+        undefined, 
+        'info@nexviewconcept.com.ng', 
+        `Dear ${letter.studentName},\n\nPlease find attached your IT Acceptance Letter.\n\nBest regards,\nNexview Concept`, 
+        pdfBuffer, 
         `Acceptance_Letter_${letter.matricNumber}.pdf`
       );
       return { success: true };
@@ -223,5 +226,6 @@ export class AcceptanceLettersService {
     }
   }
 }
+
 
 
