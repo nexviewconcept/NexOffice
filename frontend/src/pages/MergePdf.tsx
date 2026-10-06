@@ -10,7 +10,7 @@ export default function MergePdf() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      const pdfs = selectedFiles.filter(f => f.type === 'application/pdf');
+      const pdfs = selectedFiles.filter(f => f.type === 'application/pdf' || f.type.startsWith('image/'));
       if (pdfs.length !== selectedFiles.length) {
         alert('Some files were ignored because they are not PDFs.');
       }
@@ -68,7 +68,7 @@ export default function MergePdf() {
       
     } catch (err) {
       console.error(err);
-      alert('Failed to merge PDFs. One of the files might be corrupted or encrypted.');
+      alert('Failed to Merge PDF & Images. One of the files might be corrupted or encrypted.');
     } finally {
       setIsProcessing(false);
     }
@@ -79,7 +79,7 @@ export default function MergePdf() {
       <div>
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
           <FileIcon className="w-8 h-8 mr-3 text-[#E50914]" />
-          Merge PDFs
+          Merge PDF & Images
         </h1>
         <p className="text-gray-500 mt-1">Combine multiple PDF documents into one single file.</p>
       </div>
@@ -91,13 +91,13 @@ export default function MergePdf() {
         <input 
           type="file" 
           multiple 
-          accept="application/pdf"
+          accept="application/pdf,image/jpeg,image/png"
           className="hidden" 
           ref={fileInputRef}
           onChange={handleFileChange}
         />
         <FileUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-600 dark:text-gray-400 font-medium">Click to select PDF files</p>
+        <p className="text-gray-600 dark:text-gray-400 font-medium">Click to select PDF or Image files</p>
         <p className="text-sm text-gray-500 mt-1">You can upload multiple files at once</p>
       </div>
 
@@ -142,3 +142,4 @@ export default function MergePdf() {
     </div>
   );
 }
+
