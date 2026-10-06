@@ -54,6 +54,12 @@ import AuditLogs from './pages/AuditLogs';
 import Users from './pages/Users';
 import Backups from './pages/Backups';
 import JpgToPdf from './pages/JpgToPdf';
+import MergePdf from './pages/MergePdf';
+import PdfToImage from './pages/PdfToImage';
+import LetterCreator from './pages/LetterCreator';
+import MergePdf from './pages/MergePdf';
+import PdfToImage from './pages/PdfToImage';
+import LetterCreator from './pages/LetterCreator';
 import Permissions from './pages/Permissions';
 import SupportTickets from './pages/SupportTickets';
 import ServiceLogs from './pages/ServiceLogs';
@@ -152,6 +158,9 @@ export default function App() {
             <Route path="audit" element={<AuditLogs />} />
             <Route path="backups" element={<Backups />} />
           <Route path="converter" element={<JpgToPdf />} />
+          <Route path="merge-pdf" element={<MergePdf />} />
+          <Route path="pdf-to-image" element={<PdfToImage />} />
+          <Route path="letter-creator" element={<LetterCreator />} />
             <Route path="permissions" element={<Permissions />} />
             {/* Admins also get access to all operational routes below */}
             <Route path="staff" element={<StaffProfiles />} />
@@ -185,5 +194,7 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+
 
 

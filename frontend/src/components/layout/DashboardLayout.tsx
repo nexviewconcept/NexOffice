@@ -5,7 +5,7 @@ import { useThemeStore } from '../../store/themeStore';
 import { 
   LayoutDashboard, Users, Briefcase, FileText, BookOpen,
   Settings, LogOut, Menu, X, CheckCircle, DollarSign, Folder, Mail, 
-  Shield, Database, Lock, MessageSquare, Package, Award, Bell, Sun, Moon, Cpu, QrCode, Barcode
+  Shield, Database, Lock, MessageSquare, Package, Award, Bell, Sun, Moon, Cpu, QrCode, Barcode, Image, Copy, FileImage, PenTool
 } from 'lucide-react';
 import { QRCodeModal } from '../ui/QRCodeModal';
 import { BarcodeModal } from '../ui/BarcodeModal';
@@ -210,4 +210,6 @@ export default function DashboardLayout() {
     </div>
   );
 }
+
+
 
