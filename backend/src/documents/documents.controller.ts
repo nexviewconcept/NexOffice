@@ -29,6 +29,7 @@ export class DocumentsController {
   async verifyStaff(@Param('id') id: string) {
     return this.documentsService.verifyStaff(id);
   }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SUPER_ADMIN', 'DIRECTOR', 'MANAGER')
   @Post('documents/custom-letter')
@@ -41,10 +42,12 @@ export class DocumentsController {
     });
     res.end(pdfBuffer);
   }
+
   @Get('public/verify/document/:id')
   async verifyDocument(@Param('id') id: string) {
     return this.documentsService.verifyDocument(id);
   }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SUPER_ADMIN', 'DIRECTOR', 'MANAGER', 'OPERATOR')
   @Post('documents/compress')
@@ -56,10 +59,9 @@ export class DocumentsController {
     const compressedBuffer = await this.documentsService.compressPdf(file.buffer);
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': \ttachment; filename=compressed_\\,
+      'Content-Disposition': 'attachment; filename=compressed_' + file.originalname,
       'Content-Length': compressedBuffer.length,
     });
     res.end(compressedBuffer);
   }
 }
-

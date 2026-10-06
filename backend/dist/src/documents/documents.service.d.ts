@@ -24,4 +24,13 @@ export declare class DocumentsService implements OnModuleDestroy {
         photoUrl: string | null;
         status: string;
     }>;
+    generateCustomLetter(recipient: string, subject: string, content: string): Promise<Buffer>;
+    verifyDocument(id: string): Promise<{
+        id: string;
+        subject: string;
+        recipient: string;
+        content: string;
+        dateIssued: Date;
+    }>;
+    compressPdf(buffer: Buffer): Promise<Buffer>;
 }

@@ -11,4 +11,17 @@ export declare class DocumentsController {
         photoUrl: string | null;
         status: string;
     }>;
+    createCustomLetter(body: {
+        recipient: string;
+        subject: string;
+        content: string;
+    }, res: Response): Promise<void>;
+    verifyDocument(id: string): Promise<{
+        id: string;
+        subject: string;
+        recipient: string;
+        content: string;
+        dateIssued: Date;
+    }>;
+    compressPdfFile(file: Express.Multer.File, res: Response): Promise<void>;
 }

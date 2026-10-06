@@ -260,6 +260,127 @@ let DocumentsService = class DocumentsService {
             status: staff.user.status,
         };
     }
+    async generateCustomLetter(recipient, subject, content) {
+        const lh = await this.prisma.systemSetting.findUnique({ where: { key: 'letterhead' } });
+        const sig = await this.prisma.systemSetting.findUnique({ where: { key: 'signature' } });
+        const letterheadUrl = lh?.value;
+        const signatureUrl = sig?.value;
+        if (!letterheadUrl || !signatureUrl) {
+            throw new common_1.BadRequestException('System letterhead or signature not configured.');
+        }
+        const documentRecord = await this.prisma.officialDocument.create({
+            data: {
+                recipient,
+                subject,
+                content
+            }
+        });
+        const verificationUrl = `https://nexviewconcept.com.ng/verify-document/${documentRecord.id}`;
+        const qrCodeDataUrl = await this.generateQrCode(verificationUrl);
+        const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; color: #333; }
+        .container { padding: 40px; position: relative; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .header img { max-width: 100%; height: auto; max-height: 150px; }
+        .date { text-align: right; margin-bottom: 20px; font-weight: bold; font-size: 14px; }
+        .recipient { margin-bottom: 30px; white-space: pre-line; font-weight: bold; font-size: 14px; }
+        .title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 30px; text-transform: uppercase; }
+        .content { line-height: 1.6; text-align: justify; font-size: 14px; }
+        
+        .footer { margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .signature-block { flex: 1; }
+        .signature { max-width: 150px; max-height: 80px; margin-bottom: 5px; }
+        .signature-name { font-weight: bold; font-size: 14px; margin: 0; }
+        .signature-title { font-size: 12px; margin: 0; color: #555; }
+        
+        .qr-block { text-align: right; }
+        .qr-code { width: 100px; height: 100px; }
+        .qr-text { font-size: 10px; color: #777; margin-top: 5px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${letterheadUrl}" alt="Letterhead" />
+        </div>
+        
+        <div class="date">
+          Date: ${new Date().toLocaleDateString('en-GB')}
+        </div>
+
+        <div class="recipient">
+          ${recipient}
+        </div>
+
+        <div class="title">
+          ${subject}
+        </div>
+
+        <div class="content">
+          ${content}
+        </div>
+
+        <div class="footer">
+          <div class="signature-block">
+            <p style="margin-bottom: 10px;">Yours faithfully,</p>
+            <img class="signature" src="${signatureUrl}" alt="Signature" />
+            <p class="signature-name">Management</p>
+            <p class="signature-title">Nexview Concept Limited</p>
+          </div>
+          
+          <div class="qr-block">
+            <img class="qr-code" src="${qrCodeDataUrl}" alt="Verification QR Code" />
+            <p class="qr-text">Scan to verify authenticity<br/>Ref: ${documentRecord.id.substring(0, 8).toUpperCase()}</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+        return this.generatePdf(htmlContent);
+    }
+    async verifyDocument(id) {
+        const doc = await this.prisma.officialDocument.findUnique({
+            where: { id }
+        });
+        if (!doc) {
+            throw new common_1.NotFoundException('Document not found or invalid.');
+        }
+        return doc;
+    }
+    async compressPdf(buffer) {
+        const { exec } = require('child_process');
+        const util = require('util');
+        const execAsync = util.promisify(exec);
+        const os = require('os');
+        const path = require('path');
+        const inputPath = path.join(os.tmpdir(), `input_${Date.now()}.pdf`);
+        const outputPath = path.join(os.tmpdir(), `output_${Date.now()}.pdf`);
+        fs.writeFileSync(inputPath, buffer);
+        try {
+            await execAsync(`gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile=${outputPath} ${inputPath}`);
+            const compressedBuffer = fs.readFileSync(outputPath);
+            return compressedBuffer;
+        }
+        catch (err) {
+            console.error('Ghostscript compression failed:', err);
+            throw new common_1.InternalServerErrorException('Failed to compress PDF');
+        }
+        finally {
+            try {
+                if (fs.existsSync(inputPath))
+                    fs.unlinkSync(inputPath);
+                if (fs.existsSync(outputPath))
+                    fs.unlinkSync(outputPath);
+            }
+            catch (e) { }
+        }
+    }
 };
 exports.DocumentsService = DocumentsService;
 exports.DocumentsService = DocumentsService = __decorate([

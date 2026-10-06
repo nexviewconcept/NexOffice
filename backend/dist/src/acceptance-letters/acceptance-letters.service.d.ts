@@ -15,10 +15,10 @@ export declare class AcceptanceLettersService {
         updatedAt: Date;
         department: string;
         course: string;
+        dateIssued: Date;
         studentName: string;
         matricNumber: string;
         recipientAddress: string;
-        dateIssued: Date;
         issuedBy: string | null;
         qrCodeUrl: string | null;
     }>;
@@ -29,10 +29,10 @@ export declare class AcceptanceLettersService {
         updatedAt: Date;
         department: string;
         course: string;
+        dateIssued: Date;
         studentName: string;
         matricNumber: string;
         recipientAddress: string;
-        dateIssued: Date;
         issuedBy: string | null;
         qrCodeUrl: string | null;
     }[]>;
@@ -43,10 +43,10 @@ export declare class AcceptanceLettersService {
         updatedAt: Date;
         department: string;
         course: string;
+        dateIssued: Date;
         studentName: string;
         matricNumber: string;
         recipientAddress: string;
-        dateIssued: Date;
         issuedBy: string | null;
         qrCodeUrl: string | null;
     }>;
@@ -57,10 +57,10 @@ export declare class AcceptanceLettersService {
         updatedAt: Date;
         department: string;
         course: string;
+        dateIssued: Date;
         studentName: string;
         matricNumber: string;
         recipientAddress: string;
-        dateIssued: Date;
         issuedBy: string | null;
         qrCodeUrl: string | null;
     }>;

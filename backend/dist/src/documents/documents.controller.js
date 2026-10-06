@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocumentsController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const documents_service_1 = require("./documents.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
@@ -35,6 +36,30 @@ let DocumentsController = class DocumentsController {
     async verifyStaff(id) {
         return this.documentsService.verifyStaff(id);
     }
+    async createCustomLetter(body, res) {
+        const pdfBuffer = await this.documentsService.generateCustomLetter(body.recipient, body.subject, body.content);
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'attachment; filename=custom-letter.pdf',
+            'Content-Length': pdfBuffer.length,
+        });
+        res.end(pdfBuffer);
+    }
+    async verifyDocument(id) {
+        return this.documentsService.verifyDocument(id);
+    }
+    async compressPdfFile(file, res) {
+        if (!file) {
+            throw new common_1.BadRequestException('No file uploaded');
+        }
+        const compressedBuffer = await this.documentsService.compressPdf(file.buffer);
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'attachment; filename=compressed_' + file.originalname,
+            'Content-Length': compressedBuffer.length,
+        });
+        res.end(compressedBuffer);
+    }
 };
 exports.DocumentsController = DocumentsController;
 __decorate([
@@ -54,6 +79,34 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], DocumentsController.prototype, "verifyStaff", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'MANAGER'),
+    (0, common_1.Post)('documents/custom-letter'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], DocumentsController.prototype, "createCustomLetter", null);
+__decorate([
+    (0, common_1.Get)('public/verify/document/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], DocumentsController.prototype, "verifyDocument", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'MANAGER', 'OPERATOR'),
+    (0, common_1.Post)('documents/compress'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], DocumentsController.prototype, "compressPdfFile", null);
 exports.DocumentsController = DocumentsController = __decorate([
     (0, common_1.Controller)('api/v1'),
     __metadata("design:paramtypes", [documents_service_1.DocumentsService])
