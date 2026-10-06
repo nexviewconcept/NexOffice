@@ -48,11 +48,28 @@ export default function MergePdf() {
 
       for (const file of files) {
         const fileArrayBuffer = await file.arrayBuffer();
-        const pdf = await PDFDocument.load(fileArrayBuffer);
-        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-        copiedPages.forEach((page) => {
-          mergedPdf.addPage(page);
-        });
+        if (file.type === 'application/pdf') {
+          const pdf = await PDFDocument.load(fileArrayBuffer);
+          const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+          copiedPages.forEach((page) => mergedPdf.addPage(page));
+        } else if (file.type.startsWith('image/')) {
+          let image;
+          if (file.type === 'image/jpeg') {
+            image = await mergedPdf.embedJpg(fileArrayBuffer);
+          } else if (file.type === 'image/png') {
+            image = await mergedPdf.embedPng(fileArrayBuffer);
+          }
+          
+          if (image) {
+            const page = mergedPdf.addPage([image.width, image.height]);
+            page.drawImage(image, {
+              x: 0,
+              y: 0,
+              width: image.width,
+              height: image.height,
+            });
+          }
+        }
       }
 
       const mergedPdfFile = await mergedPdf.save();
