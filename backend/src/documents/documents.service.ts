@@ -258,9 +258,7 @@ export class DocumentsService implements OnModuleDestroy {
     const letterheadUrl = lh?.value;
     const signatureUrl = sig?.value;
 
-    if (!letterheadUrl || !signatureUrl) {
-      throw new BadRequestException('System letterhead or signature not configured.');
-    }
+    if (!letterheadUrl) { throw new BadRequestException('System letterhead is not configured in Settings.'); }
 
     // Save to DB to generate an ID for verification
     const documentRecord = await this.prisma.officialDocument.create({
@@ -324,12 +322,13 @@ export class DocumentsService implements OnModuleDestroy {
         </div>
 
         <div class="footer">
-          <div class="signature-block">
+          ${signatureUrl ? 
+          `<div class="signature-block">
             <p style="margin-bottom: 10px;">Yours faithfully,</p>
             <img class="signature" src="${signatureUrl}" alt="Signature" />
             <p class="signature-name">Management</p>
             <p class="signature-title">Nexview Concept Limited</p>
-          </div>
+          </div>` : '<div></div>'}
           
           <div class="qr-block">
             <img class="qr-code" src="${qrCodeDataUrl}" alt="Verification QR Code" />
@@ -382,3 +381,4 @@ export class DocumentsService implements OnModuleDestroy {
     }
   }
 }
+
