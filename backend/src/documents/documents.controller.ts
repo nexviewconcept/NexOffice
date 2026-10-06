@@ -40,4 +40,8 @@ export class DocumentsController {
     });
     res.end(pdfBuffer);
   }
+  @Get('public/verify/document/:id')
+  async verifyDocument(@Param('id') id: string) {
+    return this.documentsService.verifyDocument(id);
+  }
 }

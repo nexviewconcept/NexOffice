@@ -262,6 +262,19 @@ export class DocumentsService implements OnModuleDestroy {
       throw new BadRequestException('System letterhead or signature not configured.');
     }
 
+    // Save to DB to generate an ID for verification
+    const documentRecord = await this.prisma.officialDocument.create({
+      data: {
+        recipient,
+        subject,
+        content
+      }
+    });
+
+    // Generate QR Code
+    const verificationUrl = `https://nexviewconcept.com.ng/verify-document/${documentRecord.id}`;
+    const qrCodeDataUrl = await this.generateQrCode(verificationUrl);
+
     const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -272,12 +285,20 @@ export class DocumentsService implements OnModuleDestroy {
         .container { padding: 40px; position: relative; }
         .header { text-align: center; margin-bottom: 40px; }
         .header img { max-width: 100%; height: auto; max-height: 150px; }
-        .date { text-align: right; margin-bottom: 20px; font-weight: bold; }
-        .recipient { margin-bottom: 30px; white-space: pre-line; font-weight: bold; }
+        .date { text-align: right; margin-bottom: 20px; font-weight: bold; font-size: 14px; }
+        .recipient { margin-bottom: 30px; white-space: pre-line; font-weight: bold; font-size: 14px; }
         .title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 30px; text-transform: uppercase; }
-        .content { line-height: 1.6; text-align: justify; }
-        .footer { margin-top: 50px; }
-        .signature { max-width: 150px; max-height: 80px; margin-bottom: 10px; }
+        .content { line-height: 1.6; text-align: justify; font-size: 14px; }
+        
+        .footer { margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .signature-block { flex: 1; }
+        .signature { max-width: 150px; max-height: 80px; margin-bottom: 5px; }
+        .signature-name { font-weight: bold; font-size: 14px; margin: 0; }
+        .signature-title { font-size: 12px; margin: 0; color: #555; }
+        
+        .qr-block { text-align: right; }
+        .qr-code { width: 100px; height: 100px; }
+        .qr-text { font-size: 10px; color: #777; margin-top: 5px; }
       </style>
     </head>
     <body>
@@ -303,9 +324,17 @@ export class DocumentsService implements OnModuleDestroy {
         </div>
 
         <div class="footer">
-          <p>Yours faithfully,</p>
-          <img class="signature" src="${signatureUrl}" alt="Signature" />
-          <p><b>MD/CEO</b><br/>Nexview Concept</p>
+          <div class="signature-block">
+            <p style="margin-bottom: 10px;">Yours faithfully,</p>
+            <img class="signature" src="${signatureUrl}" alt="Signature" />
+            <p class="signature-name">Management</p>
+            <p class="signature-title">Nexview Concept Limited</p>
+          </div>
+          
+          <div class="qr-block">
+            <img class="qr-code" src="${qrCodeDataUrl}" alt="Verification QR Code" />
+            <p class="qr-text">Scan to verify authenticity<br/>Ref: ${documentRecord.id.substring(0, 8).toUpperCase()}</p>
+          </div>
         </div>
       </div>
     </body>
@@ -313,5 +342,15 @@ export class DocumentsService implements OnModuleDestroy {
     `;
 
     return this.generatePdf(htmlContent);
+  }
+
+  async verifyDocument(id: string) {
+    const doc = await this.prisma.officialDocument.findUnique({
+      where: { id }
+    });
+    if (!doc) {
+      throw new NotFoundException('Document not found or invalid.');
+    }
+    return doc;
   }
 }
