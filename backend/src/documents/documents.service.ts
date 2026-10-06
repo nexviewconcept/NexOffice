@@ -258,7 +258,7 @@ export class DocumentsService implements OnModuleDestroy {
     const letterheadUrl = lh?.value;
     const signatureUrl = sig?.value;
 
-    if (!letterheadUrl) { throw new BadRequestException('System letterhead is not configured in Settings.'); }
+    
 
     // Save to DB to generate an ID for verification
     const documentRecord = await this.prisma.officialDocument.create({
@@ -381,4 +381,5 @@ export class DocumentsService implements OnModuleDestroy {
     }
   }
 }
+
 
