@@ -62,3 +62,4 @@ export class DocumentsController {
     res.end(compressedBuffer);
   }
 }
+

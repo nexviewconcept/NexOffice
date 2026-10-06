@@ -361,14 +361,14 @@ export class DocumentsService implements OnModuleDestroy {
     const os = require('os');
     const path = require('path');
 
-    const inputPath = path.join(os.tmpdir(), \input_\.pdf\);
-    const outputPath = path.join(os.tmpdir(), \output_\.pdf\);
+    const inputPath = path.join(os.tmpdir(), `input_${Date.now()}.pdf`);
+    const outputPath = path.join(os.tmpdir(), `output_${Date.now()}.pdf`);
 
     fs.writeFileSync(inputPath, buffer);
 
     try {
       // PDFSETTINGS: /screen (low quality, small size), /ebook (medium), /printer (high), /prepress (highest)
-      await execAsync(\gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile=\ \\);
+      await execAsync(`gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile=${outputPath} ${inputPath}`);
       const compressedBuffer = fs.readFileSync(outputPath);
       return compressedBuffer;
     } catch (err) {
