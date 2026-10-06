@@ -16,7 +16,7 @@ export default function LetterCreator() {
       ['bold', 'italic', 'underline', 'strike'],
       [{ 'list': 'ordered'}, { 'list': 'bullet' }],
       [{ 'align': [] }],
-      ['link'],
+      ['link', 'image'],
       ['clean']
     ],
   };
@@ -112,3 +112,4 @@ export default function LetterCreator() {
     </div>
   );
 }
+
