@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Res, UseGuards } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -27,5 +27,17 @@ export class DocumentsController {
   @Get('public/verify/staff/:id')
   async verifyStaff(@Param('id') id: string) {
     return this.documentsService.verifyStaff(id);
+  }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'MANAGER')
+  @Post('documents/custom-letter')
+  async createCustomLetter(@Body() body: { recipient: string, subject: string, content: string }, @Res() res: Response) {
+    const pdfBuffer = await this.documentsService.generateCustomLetter(body.recipient, body.subject, body.content);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=custom-letter.pdf',
+      'Content-Length': pdfBuffer.length,
+    });
+    res.end(pdfBuffer);
   }
 }
