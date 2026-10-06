@@ -262,7 +262,7 @@ export class DocumentsService implements OnModuleDestroy {
       throw new BadRequestException('System letterhead or signature not configured.');
     }
 
-    const htmlContent = \
+    const htmlContent = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -283,34 +283,34 @@ export class DocumentsService implements OnModuleDestroy {
     <body>
       <div class="container">
         <div class="header">
-          <img src="\" alt="Letterhead" />
+          <img src="${letterheadUrl}" alt="Letterhead" />
         </div>
         
         <div class="date">
-          Date: \
+          Date: ${new Date().toLocaleDateString('en-GB')}
         </div>
 
         <div class="recipient">
-          \
+          ${recipient}
         </div>
 
         <div class="title">
-          \
+          ${subject}
         </div>
 
         <div class="content">
-          \
+          ${content}
         </div>
 
         <div class="footer">
           <p>Yours faithfully,</p>
-          <img class="signature" src="\" alt="Signature" />
+          <img class="signature" src="${signatureUrl}" alt="Signature" />
           <p><b>MD/CEO</b><br/>Nexview Concept</p>
         </div>
       </div>
     </body>
     </html>
-    \;
+    `;
 
     return this.generatePdf(htmlContent);
   }
