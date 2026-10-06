@@ -23,6 +23,7 @@ import VerifyStaff from './pages/public/VerifyStaff';
 import VerifyReceipt from './pages/public/VerifyReceipt';
 import VerifyCert from './pages/public/VerifyCert';
 import VerifyInvoice from './pages/public/VerifyInvoice';
+import VerifyDocument from './pages/public/VerifyDocument';
 import VerifyLetter from './pages/public/VerifyLetter';
 
 // Auth
@@ -191,6 +192,7 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
 
 
 
