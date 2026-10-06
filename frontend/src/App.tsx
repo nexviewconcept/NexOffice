@@ -58,6 +58,7 @@ import JpgToPdf from './pages/JpgToPdf';
 import MergePdf from './pages/MergePdf';
 import PdfToImage from './pages/PdfToImage';
 import LetterCreator from './pages/LetterCreator';
+import DocumentsEditor from './pages/DocumentsEditor';
 import Permissions from './pages/Permissions';
 import SupportTickets from './pages/SupportTickets';
 import ServiceLogs from './pages/ServiceLogs';
@@ -155,6 +156,7 @@ export default function App() {
             <Route path="whatsapp-settings" element={<WhatsappSettings />} />
             <Route path="audit" element={<AuditLogs />} />
             <Route path="backups" element={<Backups />} />
+          <Route path="documents-editor" element={<DocumentsEditor />} />
           <Route path="converter" element={<JpgToPdf />} />
           <Route path="merge-pdf" element={<MergePdf />} />
           <Route path="pdf-to-image" element={<PdfToImage />} />
@@ -192,6 +194,7 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
 
 
 

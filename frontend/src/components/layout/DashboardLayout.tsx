@@ -88,17 +88,8 @@ export default function DashboardLayout() {
           <NavLink to="files" className={navClass}>
             <Folder className="w-5 h-5 mr-3" /> File Manager
           </NavLink>
-          <NavLink to="converter" className={navClass}>
-            <FileText className="w-5 h-5 mr-3" /> JPG to PDF Converter
-          </NavLink>
-          <NavLink to="merge-pdf" className={navClass}>
-            <Copy className="w-5 h-5 mr-3" /> Merge PDF
-          </NavLink>
-          <NavLink to="pdf-to-image" className={navClass}>
-            <FileImage className="w-5 h-5 mr-3" /> PDF to Image
-          </NavLink>
-          <NavLink to="letter-creator" className={navClass}>
-            <PenTool className="w-5 h-5 mr-3" /> Letter Creator
+          <NavLink to="documents-editor" className={navClass}>
+            <FileText className="w-5 h-5 mr-3" /> Documents Editor
           </NavLink>
           <NavLink to="emails" className={navClass}>
             <Mail className="w-5 h-5 mr-3" /> Email Center
