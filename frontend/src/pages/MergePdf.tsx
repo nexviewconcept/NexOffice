@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { PDFDocument } from 'pdf-lib';
-import { FileUp, File as FileIcon, X, Move, Download, Loader2 } from 'lucide-react';
+import { FileUp, File as FileIcon, X, Move, Download, Loader2, Minimize2 } from 'lucide-react';
+import api from '../lib/api';
 
 export default function MergePdf() {
   const [files, setFiles] = useState<File[]>([]);

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { FileImage, FileText, Download, Trash2, Plus, ArrowRight } from 'lucide-react';
+import { FileImage, FileText, Download, Trash2, Plus, ArrowRight, Minimize2 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import api from '../lib/api';
 
 export default function JpgToPdf() {
   const [images, setImages] = useState<{ file: File; url: string }[]>([]);
@@ -96,7 +97,7 @@ export default function JpgToPdf() {
         const url = window.URL.createObjectURL(compressedBlob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = compressed_converted-document.pdf;
+        a.download = 'compressed_converted-document.pdf';
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
