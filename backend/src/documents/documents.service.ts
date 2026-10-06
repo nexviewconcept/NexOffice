@@ -278,33 +278,49 @@ export class DocumentsService implements OnModuleDestroy {
     <html>
     <head>
       <meta charset="utf-8">
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
       <style>
-        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; color: #333; }
-        .container { padding: 40px; position: relative; }
-        .header { text-align: center; margin-bottom: 40px; }
-        .header img { max-width: 100%; height: auto; max-height: 150px; }
-        .date { text-align: right; margin-bottom: 20px; font-weight: bold; font-size: 14px; }
+        @page { margin: 0; size: A4 portrait; }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; padding: 0; color: #111; min-height: 100vh; position: relative; box-sizing: border-box; padding-bottom: 150px; }
+        .container { padding: 0 50px; position: relative; }
+        
+        .header-strip { display: flex; justify-content: center; align-items: flex-start; gap: 10px; padding-top: 40px; margin-bottom: 10px; }
+        .logo { height: 60px; object-fit: contain; }
+        .rc-text { font-size: 10px; font-weight: 600; margin-top: 5px; letter-spacing: 0.5px; }
+        .red-line { height: 4px; background-color: #FF0000; width: 100%; margin-bottom: 40px; }
+        
+        .date { text-align: right; margin-bottom: 20px; font-weight: 600; font-size: 14px; }
         .recipient { margin-bottom: 30px; white-space: pre-line; font-weight: bold; font-size: 14px; }
-        .title { text-align: center; font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 30px; text-transform: uppercase; }
+        .title { text-align: center; font-size: 18px; font-weight: 800; text-decoration: underline; margin-bottom: 30px; text-transform: uppercase; }
         .content { line-height: 1.6; text-align: justify; font-size: 14px; }
         
-        .footer { margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .signature-block { flex: 1; }
+        .bottom-blocks { margin-top: 50px; }
+        .signature-block { float: left; }
         .signature { max-width: 150px; max-height: 80px; margin-bottom: 5px; }
-        .signature-name { font-weight: bold; font-size: 14px; margin: 0; }
+        .signature-name { font-weight: 800; font-size: 14px; margin: 0; }
         .signature-title { font-size: 12px; margin: 0; color: #555; }
         
-        .qr-block { text-align: right; }
-        .qr-code { width: 100px; height: 100px; }
-        .qr-text { font-size: 10px; color: #777; margin-top: 5px; }
+        .qr-block { float: right; text-align: center; }
+        .qr-code { width: 90px; height: 90px; }
+        .qr-text { font-size: 10px; color: #777; margin-top: 5px; font-weight: 500; }
+        .clearfix { clear: both; }
+
+        .footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 0 50px; text-align: center; }
+        .footer-red-line { height: 4px; background-color: #FF0000; width: 100%; margin-bottom: 5px; }
+        .board-title { color: #FF0000; font-weight: 800; font-size: 11px; margin: 0; }
+        .board-names { font-size: 11px; font-weight: 500; margin: 2px 0 10px; color: #111; }
+        .office-info { font-size: 10px; font-weight: 500; color: #111; line-height: 1.4; padding-bottom: 20px; }
+        .office-info span { color: #FF0000; font-weight: 800; }
       </style>
     </head>
     <body>
+      <div class="header-strip">
+        ${this.getLogoBase64() ? `<img class="logo" src="${this.getLogoBase64()}" alt="Nexview Logo" />` : `<div style="font-size:24px; font-weight:800; color:#FF0000;">NEXVIEW CONCEPT LIMITED</div>`}
+        <div class="rc-text">RC: 8682929</div>
+      </div>
+      <div class="red-line"></div>
+
       <div class="container">
-        <div class="header">
-          <img src="${letterheadUrl}" alt="Letterhead" />
-        </div>
-        
         <div class="date">
           Date: ${new Date().toLocaleDateString('en-GB')}
         </div>
@@ -321,7 +337,7 @@ export class DocumentsService implements OnModuleDestroy {
           ${content}
         </div>
 
-        <div class="footer">
+        <div class="bottom-blocks">
           ${signatureUrl ? 
           `<div class="signature-block">
             <p style="margin-bottom: 10px;">Yours faithfully,</p>
@@ -334,7 +350,19 @@ export class DocumentsService implements OnModuleDestroy {
             <img class="qr-code" src="${qrCodeDataUrl}" alt="Verification QR Code" />
             <p class="qr-text">Scan to verify authenticity<br/>Ref: ${documentRecord.id.substring(0, 8).toUpperCase()}</p>
           </div>
+          <div class="clearfix"></div>
         </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-red-line"></div>
+        <p class="board-title">BOARD OF DIRECTORS:</p>
+        <p class="board-names">S.I. AMANESI (Chairman), R. YAR\'ADUA, MUSTAPHA BELLO</p>
+        <p class="office-info">
+          <span>HEAD OFFICE:</span> B112, 1st Floor, A.A. Zauro Plaza, Along Ahmadu Bello Way, Birnin Kebbi, Kebbi State.<br/>
+          <span>BRANCH OFFICE:</span> Kano State.<br/>
+          <span>TEL:</span> 08101416960, 08061217036 <span>EMAIL:</span> info@nexviewconcept.com.ng <span>WEB:</span> www.nexviewconcept.com.ng
+        </p>
       </div>
     </body>
     </html>
