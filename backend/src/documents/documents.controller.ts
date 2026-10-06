@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Res, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentsService } from './documents.service';
 import type { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -43,5 +44,21 @@ export class DocumentsController {
   @Get('public/verify/document/:id')
   async verifyDocument(@Param('id') id: string) {
     return this.documentsService.verifyDocument(id);
+  }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'MANAGER', 'OPERATOR')
+  @Post('documents/compress')
+  @UseInterceptors(FileInterceptor('file'))
+  async compressPdfFile(@UploadedFile() file: Express.Multer.File, @Res() res: Response) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+    const compressedBuffer = await this.documentsService.compressPdf(file.buffer);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': \ttachment; filename=compressed_\\,
+      'Content-Length': compressedBuffer.length,
+    });
+    res.end(compressedBuffer);
   }
 }

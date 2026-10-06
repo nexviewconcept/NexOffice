@@ -353,4 +353,32 @@ export class DocumentsService implements OnModuleDestroy {
     }
     return doc;
   }
+
+  async compressPdf(buffer: Buffer): Promise<Buffer> {
+    const { exec } = require('child_process');
+    const util = require('util');
+    const execAsync = util.promisify(exec);
+    const os = require('os');
+    const path = require('path');
+
+    const inputPath = path.join(os.tmpdir(), \input_\.pdf\);
+    const outputPath = path.join(os.tmpdir(), \output_\.pdf\);
+
+    fs.writeFileSync(inputPath, buffer);
+
+    try {
+      // PDFSETTINGS: /screen (low quality, small size), /ebook (medium), /printer (high), /prepress (highest)
+      await execAsync(\gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile=\ \\);
+      const compressedBuffer = fs.readFileSync(outputPath);
+      return compressedBuffer;
+    } catch (err) {
+      console.error('Ghostscript compression failed:', err);
+      throw new InternalServerErrorException('Failed to compress PDF');
+    } finally {
+      try {
+        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+        if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+      } catch (e) {}
+    }
+  }
 }

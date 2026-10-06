@@ -33,6 +33,7 @@ const backups_module_1 = require("./backups/backups.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
 const permissions_module_1 = require("./permissions/permissions.module");
 const tickets_module_1 = require("./tickets/tickets.module");
+const acceptance_letters_module_1 = require("./acceptance-letters/acceptance-letters.module");
 const service_logs_module_1 = require("./service-logs/service-logs.module");
 const students_module_1 = require("./students/students.module");
 const courses_module_1 = require("./courses/courses.module");
@@ -49,7 +50,8 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             schedule_1.ScheduleModule.forRoot(),
             throttler_1.ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
-            prisma_module_1.PrismaModule, auth_module_1.AuthModule, users_module_1.UsersModule, staff_profiles_module_1.StaffProfilesModule, documents_module_1.DocumentsModule, clients_module_1.ClientsModule, invoices_module_1.InvoicesModule, receipts_module_1.ReceiptsModule, inventory_module_1.InventoryModule, certificates_module_1.CertificatesModule, notifications_module_1.NotificationsModule, files_module_1.FilesModule, public_verification_module_1.PublicVerificationModule, finance_module_1.FinanceModule, emails_module_1.EmailsModule, settings_module_1.SettingsModule, audit_module_1.AuditModule, backups_module_1.BackupsModule, dashboard_module_1.DashboardModule, permissions_module_1.PermissionsModule, tickets_module_1.TicketsModule, service_logs_module_1.ServiceLogsModule, students_module_1.StudentsModule, courses_module_1.CoursesModule, corporate_module_1.CorporateModule, whatsapp_module_1.WhatsappModule, tasks_module_1.TasksModule
+            prisma_module_1.PrismaModule, auth_module_1.AuthModule, users_module_1.UsersModule, staff_profiles_module_1.StaffProfilesModule, documents_module_1.DocumentsModule, clients_module_1.ClientsModule, invoices_module_1.InvoicesModule, receipts_module_1.ReceiptsModule, inventory_module_1.InventoryModule, certificates_module_1.CertificatesModule, notifications_module_1.NotificationsModule, files_module_1.FilesModule, public_verification_module_1.PublicVerificationModule, finance_module_1.FinanceModule, emails_module_1.EmailsModule, settings_module_1.SettingsModule, audit_module_1.AuditModule, backups_module_1.BackupsModule, dashboard_module_1.DashboardModule, permissions_module_1.PermissionsModule, tickets_module_1.TicketsModule,
+            acceptance_letters_module_1.AcceptanceLettersModule, service_logs_module_1.ServiceLogsModule, students_module_1.StudentsModule, courses_module_1.CoursesModule, corporate_module_1.CorporateModule, whatsapp_module_1.WhatsappModule, tasks_module_1.TasksModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [

@@ -118,7 +118,7 @@ let DocumentsService = class DocumentsService {
         }
         this.cachedBrowser = await puppeteer.launch({
             headless: true,
-            executablePath: 'D:\\NexPortal\\NexOffice\\chrome\\win64-152.0.7977.75\\chrome-win64\\chrome.exe',
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || 'D:\\NexPortal\\NexOffice\\chrome\\win64-152.0.7977.75\\chrome-win64\\chrome.exe',
             args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security', '--disable-dev-shm-usage']
         });
         return this.cachedBrowser;
