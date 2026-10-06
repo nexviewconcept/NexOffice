@@ -5,6 +5,7 @@ import { FileUp, File as FileIcon, X, Move, Download, Loader2 } from 'lucide-rea
 export default function MergePdf() {
   const [files, setFiles] = useState<File[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [compress, setCompress] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +74,18 @@ export default function MergePdf() {
       }
 
       const mergedPdfFile = await mergedPdf.save();
-      const blob = new Blob([mergedPdfFile as any], { type: 'application/pdf' });
+      let blob = new Blob([mergedPdfFile as any], { type: 'application/pdf' });
+      
+      if (compress) {
+        const formData = new FormData();
+        formData.append('file', new File([blob], 'merged.pdf', { type: 'application/pdf' }));
+        const res = await api.post('/documents/compress', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          responseType: 'blob'
+        });
+        blob = new Blob([res.data]);
+      }
+
       const url = window.URL.createObjectURL(blob);
       
       const a = document.createElement('a');
@@ -159,4 +171,5 @@ export default function MergePdf() {
     </div>
   );
 }
+
 

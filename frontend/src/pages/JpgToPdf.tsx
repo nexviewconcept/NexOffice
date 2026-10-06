@@ -5,6 +5,7 @@ import { jsPDF } from 'jspdf';
 export default function JpgToPdf() {
   const [images, setImages] = useState<{ file: File; url: string }[]>([]);
   const [generating, setGenerating] = useState(false);
+  const [compress, setCompress] = useState(false);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape' | 'auto'>('auto');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +82,25 @@ export default function JpgToPdf() {
         doc.addImage(img, 'JPEG', x, y, renderWidth, renderHeight);
       }
 
-      doc.save('converted-document.pdf');
+      if (!compress) {
+        doc.save('converted-document.pdf');
+      } else {
+        const blob = doc.output('blob');
+        const formData = new FormData();
+        formData.append('file', new File([blob], 'images.pdf', { type: 'application/pdf' }));
+        const res = await api.post('/documents/compress', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          responseType: 'blob'
+        });
+        const compressedBlob = new Blob([res.data]);
+        const url = window.URL.createObjectURL(compressedBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = compressed_converted-document.pdf;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
     } catch (err) {
       console.error(err);
       alert('Failed to generate PDF');
@@ -152,4 +171,6 @@ export default function JpgToPdf() {
     </div>
   );
 }
+
+
 

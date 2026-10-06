@@ -30,6 +30,13 @@ export default function DocumentsEditor() {
       icon: PenTool,
       href: '/admin/letter-creator',
       color: 'bg-[#E50914]/10 text-[#E50914] dark:bg-red-900/20 dark:text-red-400'
+    },
+    {
+      name: 'PDF Compressor',
+      description: 'Reduce the file size of your PDF documents quickly.',
+      icon: FileText,
+      href: '/admin/pdf-compressor',
+      color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400'
     }
   ];
 

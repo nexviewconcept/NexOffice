@@ -59,6 +59,7 @@ import MergePdf from './pages/MergePdf';
 import PdfToImage from './pages/PdfToImage';
 import LetterCreator from './pages/LetterCreator';
 import DocumentsEditor from './pages/DocumentsEditor';
+import PdfCompressor from './pages/PdfCompressor';
 import Permissions from './pages/Permissions';
 import SupportTickets from './pages/SupportTickets';
 import ServiceLogs from './pages/ServiceLogs';
@@ -160,6 +161,7 @@ export default function App() {
           <Route path="converter" element={<JpgToPdf />} />
           <Route path="merge-pdf" element={<MergePdf />} />
           <Route path="pdf-to-image" element={<PdfToImage />} />
+          <Route path="pdf-compressor" element={<PdfCompressor />} />
           <Route path="letter-creator" element={<LetterCreator />} />
             <Route path="permissions" element={<Permissions />} />
             {/* Admins also get access to all operational routes below */}
@@ -194,6 +196,7 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
 
 
 
