@@ -5,6 +5,7 @@ import { jsPDF } from 'jspdf';
 export default function JpgToPdf() {
   const [images, setImages] = useState<{ file: File; url: string }[]>([]);
   const [generating, setGenerating] = useState(false);
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape' | 'auto'>('auto');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -25,19 +26,38 @@ export default function JpgToPdf() {
     setGenerating(true);
 
     try {
+      let initialOrientation: 'portrait' | 'landscape' = 'portrait';
+      if (orientation === 'auto') {
+        const firstImg = new Image();
+        firstImg.src = images[0].url;
+        await new Promise((resolve) => { firstImg.onload = resolve; });
+        initialOrientation = firstImg.width > firstImg.height ? 'landscape' : 'portrait';
+      } else {
+        initialOrientation = orientation as 'portrait' | 'landscape';
+      }
+
       const doc = new jsPDF({
-        orientation: 'portrait',
+        orientation: initialOrientation,
         unit: 'px',
         format: 'a4'
       });
-
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
 
       for (let i = 0; i < images.length; i++) {
         const img = new Image();
         img.src = images[i].url;
         await new Promise((resolve) => { img.onload = resolve; });
+
+        let currentOrientation = initialOrientation;
+        if (orientation === 'auto') {
+          currentOrientation = img.width > img.height ? 'landscape' : 'portrait';
+        }
+
+        if (i > 0) {
+          doc.addPage('a4', currentOrientation);
+        }
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
 
         // Calculate aspect ratio
         const imgRatio = img.width / img.height;
@@ -58,8 +78,6 @@ export default function JpgToPdf() {
         const x = (pageWidth - renderWidth) / 2;
         const y = (pageHeight - renderHeight) / 2;
 
-        if (i > 0) doc.addPage();
-        
         doc.addImage(img, 'JPEG', x, y, renderWidth, renderHeight);
       }
 
@@ -134,3 +152,4 @@ export default function JpgToPdf() {
     </div>
   );
 }
+
