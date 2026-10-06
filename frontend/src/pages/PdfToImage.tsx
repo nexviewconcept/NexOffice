@@ -50,6 +50,7 @@ export default function PdfToImage() {
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
+        // @ts-ignore
         await page.render({
           canvasContext: context,
           viewport: viewport

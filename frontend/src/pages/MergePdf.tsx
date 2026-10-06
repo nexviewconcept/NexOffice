@@ -73,7 +73,7 @@ export default function MergePdf() {
       }
 
       const mergedPdfFile = await mergedPdf.save();
-      const blob = new Blob([mergedPdfFile], { type: 'application/pdf' });
+      const blob = new Blob([mergedPdfFile as any], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       
       const a = document.createElement('a');

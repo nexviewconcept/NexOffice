@@ -57,9 +57,6 @@ import JpgToPdf from './pages/JpgToPdf';
 import MergePdf from './pages/MergePdf';
 import PdfToImage from './pages/PdfToImage';
 import LetterCreator from './pages/LetterCreator';
-import MergePdf from './pages/MergePdf';
-import PdfToImage from './pages/PdfToImage';
-import LetterCreator from './pages/LetterCreator';
 import Permissions from './pages/Permissions';
 import SupportTickets from './pages/SupportTickets';
 import ServiceLogs from './pages/ServiceLogs';
@@ -194,6 +191,7 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
 
 
 
