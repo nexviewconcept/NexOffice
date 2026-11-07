@@ -37,6 +37,13 @@ export default function DocumentsEditor() {
       icon: FileText,
       href: '/admin/pdf-compressor',
       color: 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400'
+    },
+    {
+      name: 'SIWES / IT Acceptance Letters',
+      description: 'Issue and generate official student industrial training acceptance letters with live QR verification.',
+      icon: FileText,
+      href: '/admin/it-letters',
+      color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
     }
   ];
 

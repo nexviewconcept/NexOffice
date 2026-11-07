@@ -61,6 +61,9 @@ export default function DashboardLayout() {
           <NavLink to="courses" className={navClass}>
             <BookOpen className="w-5 h-5 mr-3" /> Courses & Training
           </NavLink>
+          <NavLink to="it-letters" className={navClass}>
+            <FileText className="w-5 h-5 mr-3" /> IT Acceptance Letters
+          </NavLink>
           <NavLink to="permissions" className={navClass}>
             <Lock className="w-5 h-5 mr-3" /> Roles & Permissions
           </NavLink>
