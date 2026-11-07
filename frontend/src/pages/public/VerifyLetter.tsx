@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Shield, CheckCircle, XCircle, ArrowLeft, Loader2, Building, User, BookOpen } from 'lucide-react';
+import { Shield, CheckCircle, XCircle, ArrowLeft, Loader2, Building, User, BookOpen, Clock, Award } from 'lucide-react';
 import { format } from 'date-fns';
 import api from '../../lib/api';
 
@@ -29,10 +29,11 @@ export default function VerifyLetter() {
       <div className="mb-8 text-center">
         <img src="/logo.png" alt="Nexview Concept" className="h-12 mx-auto dark:hidden" />
         <img src="/light-logo.png" alt="Nexview Concept" className="h-12 mx-auto hidden dark:block" />
-        <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">Document Verification</h2>
+        <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">Official Document Verification</h2>
+        <p className="text-sm text-gray-500 mt-1">Nexview Concept Limited Document Authentication Portal</p>
       </div>
 
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800">
+      <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800">
         <div className="p-8">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
@@ -53,44 +54,64 @@ export default function VerifyLetter() {
                 <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
                   <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-500" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Valid Acceptance Letter</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Authentic SIWES Acceptance Letter</h3>
                 <p className="text-sm text-green-600 dark:text-green-400 font-medium mt-1 flex items-center justify-center">
                   <Shield className="w-4 h-4 mr-1" />
-                  Verified by Nexview Systems
+                  Officially Issued & Verified by Nexview Concept Limited
                 </p>
               </div>
 
-              <div className="space-y-5 bg-gray-50 dark:bg-gray-950 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
+              <div className="space-y-4 bg-gray-50 dark:bg-gray-950 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
                 <div className="flex items-start gap-3">
                   <User className="w-5 h-5 text-gray-400 mt-0.5" />
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Student Name</p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{letter.studentName}</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{letter.studentName}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <div className="w-5 h-5 flex items-center justify-center text-gray-400 mt-0.5 font-bold text-sm">#</div>
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Matric Number</p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{letter.matricNumber}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Matriculation / Reg Number</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{letter.matricNumber}</p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <BookOpen className="w-5 h-5 text-gray-400 mt-0.5" />
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Course & Dept</p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{letter.course}</p>
-                    <p className="text-sm text-gray-500">{letter.department}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Course / Department</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{letter.department}</p>
+                    {letter.course && letter.course !== letter.department && (
+                      <p className="text-xs text-gray-500">{letter.course}</p>
+                    )}
                   </div>
                 </div>
+
+                {letter.duration && (
+                  <div className="flex items-start gap-3">
+                    <Clock className="w-5 h-5 text-gray-400 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Training Duration</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{letter.duration}</p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-start gap-3">
                   <Building className="w-5 h-5 text-gray-400 mt-0.5" />
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Recipient / Institution</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Addressed To / Institution</p>
                     <p className="text-sm font-medium text-gray-900 dark:text-white whitespace-pre-line">{letter.recipientAddress}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Award className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Authorized Signatory</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{letter.signatoryName || 'Faiza Saidu'} ({letter.signatoryTitle || 'COO'})</p>
                   </div>
                 </div>
               </div>
@@ -99,20 +120,21 @@ export default function VerifyLetter() {
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Issued on: {format(new Date(letter.dateIssued), 'MMMM d, yyyy')}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">Ref: {letter.id}</p>
+                <p className="text-xs text-gray-400 mt-1 font-mono">Document Ref: {letter.id}</p>
               </div>
             </div>
           )}
         </div>
-        <div className="bg-gray-50 dark:bg-gray-950 px-8 py-4 border-t border-gray-100 dark:border-gray-800">
-          <Link to="/" className="text-sm font-medium text-[#E50914] hover:text-red-700 flex items-center justify-center transition-colors">
+        <div className="bg-gray-50 dark:bg-gray-950 px-8 py-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+          <Link to="/" className="text-sm font-medium text-[#E50914] hover:text-red-700 flex items-center transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Go to Homepage
+            Home
           </Link>
+          <span className="text-xs text-gray-400">RC: 8682929</span>
         </div>
       </div>
       
-      <div className="mt-12 text-center text-xs text-gray-400">
+      <div className="mt-8 text-center text-xs text-gray-400">
         &copy; {new Date().getFullYear()} Nexview Concept Limited. All rights reserved.
       </div>
     </div>

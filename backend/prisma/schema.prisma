@@ -428,11 +428,17 @@ model AcceptanceLetter {
   studentName      String
   matricNumber     String
   department       String
-  course           String
+  course           String?
+  gender           String   @default("MALE") // MALE, FEMALE
+  duration         String?
+  institutionName  String?
   recipientAddress String   @db.Text
+  signatoryName    String   @default("Faiza Saidu")
+  signatoryTitle   String   @default("Chief Operations Officer (COO)")
+  signatureUrl     String?  @db.Text
   dateIssued       DateTime @default(now())
   issuedBy         String?
-  qrCodeUrl        String?
+  qrCodeUrl        String?  @db.Text
   status           String   @default("ISSUED") // ISSUED, REVOKED
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

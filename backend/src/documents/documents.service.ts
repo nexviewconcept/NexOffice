@@ -73,10 +73,31 @@ export class DocumentsService implements OnModuleDestroy {
       return this.cachedBrowser;
     }
     
+    let chromePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+    if (!chromePath) {
+      if (process.platform === "win32") {
+        if (fs.existsSync("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe")) {
+          chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+        } else if (fs.existsSync("C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe")) {
+          chromePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+        } else if (fs.existsSync("D:\\NexPortal\\NexOffice\\chrome\\win64-152.0.7977.75\\chrome-win64\\chrome.exe")) {
+          chromePath = "D:\\NexPortal\\NexOffice\\chrome\\win64-152.0.7977.75\\chrome-win64\\chrome.exe";
+        }
+      } else {
+        if (fs.existsSync("/usr/bin/google-chrome-stable")) {
+          chromePath = "/usr/bin/google-chrome-stable";
+        } else if (fs.existsSync("/usr/bin/google-chrome")) {
+          chromePath = "/usr/bin/google-chrome";
+        } else if (fs.existsSync("/usr/bin/chromium")) {
+          chromePath = "/usr/bin/chromium";
+        }
+      }
+    }
+
     this.cachedBrowser = await puppeteer.launch({
       headless: true,
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || 'D:\\NexPortal\\NexOffice\\chrome\\win64-152.0.7977.75\\chrome-win64\\chrome.exe',
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security', '--disable-dev-shm-usage']
+      executablePath: chromePath,
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-web-security", "--disable-dev-shm-usage"]
     });
     return this.cachedBrowser;
   }
