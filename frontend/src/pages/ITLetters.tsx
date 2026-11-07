@@ -124,6 +124,7 @@ export default function ITLetters() {
     try {
       const payload = {
         ...data,
+        course: data.department || data.course,
         duration: durationPreset === 'BLANK' ? 'From _____________ to _____________' : (customDuration || 'From _____________ to _____________'),
         institutionName: institution,
       };
@@ -132,9 +133,10 @@ export default function ITLetters() {
       reset();
       fetchLetters();
       alert('Acceptance letter generated successfully with QR Code!');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Failed to generate letter');
+      const msg = err.response?.data?.message || err.message || 'Failed to generate letter';
+      alert(typeof msg === 'string' ? msg : JSON.stringify(msg));
     } finally {
       setIsSubmitting(false);
     }

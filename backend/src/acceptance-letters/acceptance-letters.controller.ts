@@ -4,19 +4,19 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
-@Controller('acceptance-letters')
+@Controller('api/v1/acceptance-letters')
 export class AcceptanceLettersController {
   constructor(private readonly acceptanceLettersService: AcceptanceLettersService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'MANAGER')
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR')
   @Post()
   create(@Body() data: any, @Request() req: any) {
     return this.acceptanceLettersService.create(data, req.user);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'MANAGER')
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR')
   @Get()
   findAll() {
     return this.acceptanceLettersService.findAll();
@@ -39,24 +39,23 @@ export class AcceptanceLettersController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'MANAGER')
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR')
   @Post(':id/email')
   sendEmail(@Param('id') id: string, @Body('email') email: string) {
     return this.acceptanceLettersService.sendEmail(id, email);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'MANAGER')
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR')
   @Post(':id/whatsapp')
   sendWhatsapp(@Param('id') id: string, @Body('phone') phone: string) {
     return this.acceptanceLettersService.sendWhatsapp(id, phone);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'MANAGER')
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.acceptanceLettersService.remove(id);
   }
 }
-

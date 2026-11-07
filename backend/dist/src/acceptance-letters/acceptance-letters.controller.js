@@ -54,7 +54,7 @@ let AcceptanceLettersController = class AcceptanceLettersController {
 exports.AcceptanceLettersController = AcceptanceLettersController;
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('ADMIN', 'MANAGER'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR'),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
@@ -64,7 +64,7 @@ __decorate([
 ], AcceptanceLettersController.prototype, "create", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('ADMIN', 'MANAGER'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR'),
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -87,7 +87,7 @@ __decorate([
 ], AcceptanceLettersController.prototype, "getPdf", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('ADMIN', 'MANAGER'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR'),
     (0, common_1.Post)(':id/email'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)('email')),
@@ -97,7 +97,7 @@ __decorate([
 ], AcceptanceLettersController.prototype, "sendEmail", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('ADMIN', 'MANAGER'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR'),
     (0, common_1.Post)(':id/whatsapp'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)('phone')),
@@ -107,7 +107,7 @@ __decorate([
 ], AcceptanceLettersController.prototype, "sendWhatsapp", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('ADMIN', 'MANAGER'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR'),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -115,7 +115,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AcceptanceLettersController.prototype, "remove", null);
 exports.AcceptanceLettersController = AcceptanceLettersController = __decorate([
-    (0, common_1.Controller)('acceptance-letters'),
+    (0, common_1.Controller)('api/v1/acceptance-letters'),
     __metadata("design:paramtypes", [acceptance_letters_service_1.AcceptanceLettersService])
 ], AcceptanceLettersController);
 //# sourceMappingURL=acceptance-letters.controller.js.map
