@@ -161,6 +161,7 @@ export class AcceptanceLettersService {
     <html>
     <head>
       <meta charset="utf-8">
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
       <style>
         @page {
           size: A4 portrait;
@@ -177,15 +178,15 @@ export class AcceptanceLettersService {
           ${letterheadBase64 ? `background-image: url('${letterheadBase64}');` : ''}
           background-size: 210mm 297mm;
           background-repeat: no-repeat;
-          font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-          color: #111;
+          font-family: 'Montserrat', sans-serif;
+          color: #1a1a1a;
           position: relative;
           overflow: hidden;
         }
         .content {
-          padding: 38mm 20mm 28mm 20mm;
-          font-size: 13.5px;
-          line-height: 1.5;
+          padding: 38mm 20mm 26mm 20mm;
+          font-size: 13px;
+          line-height: 1.55;
           height: 297mm;
           display: flex;
           flex-direction: column;
@@ -196,32 +197,35 @@ export class AcceptanceLettersService {
         }
         .date {
           text-align: right;
-          font-size: 13.5px;
+          font-size: 13px;
           margin-bottom: 20px;
-          font-weight: 500;
-          color: #222;
+          font-weight: 600;
+          color: #333;
         }
         .recipient {
-          font-size: 13.5px;
+          font-size: 13px;
           line-height: 1.45;
           margin-bottom: 22px;
           white-space: pre-line;
           color: #111;
+          font-weight: 500;
         }
         .subject {
           text-align: center;
-          font-size: 14.5px;
+          font-size: 14px;
           font-weight: 800;
           text-decoration: underline;
           text-transform: uppercase;
           margin-bottom: 20px;
-          letter-spacing: 0.3px;
-          color: #000;
+          letter-spacing: 0.5px;
+          color: #0b0b0b;
         }
         .body-p {
           text-align: justify;
           margin-bottom: 14px;
-          line-height: 1.55;
+          line-height: 1.6;
+          font-weight: 400;
+          color: #222;
         }
         .placement-list {
           margin: 10px 0 14px 0;
@@ -230,23 +234,27 @@ export class AcceptanceLettersService {
         }
         .placement-list li {
           margin-bottom: 5px;
-          line-height: 1.45;
+          line-height: 1.5;
+          font-size: 13px;
+          color: #222;
         }
         .placement-list strong {
           font-weight: 700;
+          color: #000;
         }
         .bottom-section {
-          margin-bottom: 5mm;
+          margin-bottom: 4mm;
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
         }
         .signatory {
-          font-size: 13.5px;
-          line-height: 1.35;
+          font-size: 13px;
+          line-height: 1.4;
         }
         .signatory .yours {
           margin-bottom: 6px;
+          font-weight: 500;
         }
         .signatory img {
           height: 48px;
@@ -260,10 +268,12 @@ export class AcceptanceLettersService {
         }
         .signatory .name {
           font-weight: 700;
-          color: #111;
+          color: #000;
         }
         .signatory .title {
-          color: #333;
+          color: #444;
+          font-weight: 500;
+          font-size: 12px;
         }
         .qr-block {
           text-align: center;
@@ -276,8 +286,9 @@ export class AcceptanceLettersService {
         .qr-text {
           font-size: 8.5px;
           color: #555;
-          margin-top: 3px;
-          line-height: 1.25;
+          margin-top: 4px;
+          line-height: 1.3;
+          font-weight: 500;
         }
       </style>
     </head>
