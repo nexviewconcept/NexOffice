@@ -111,6 +111,8 @@ export default function App() {
         <Route path="/verify/receipt/:id" element={<VerifyReceipt />} />
         <Route path="/verify/cert/:id" element={<VerifyCert />} />
         <Route path="/verify/invoice/:id" element={<VerifyInvoice />} />
+        <Route path="/verify-letter/:id" element={<VerifyLetter />} />
+        <Route path="/verify/letter/:id" element={<VerifyLetter />} />
         
         {/* Student Portal (Protected) */}
         <Route element={<ProtectedRoute allowedRoles={['STUDENT']} />}>

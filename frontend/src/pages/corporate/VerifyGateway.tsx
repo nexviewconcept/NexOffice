@@ -12,7 +12,11 @@ export default function VerifyGateway() {
     if (!verifyId.trim()) return;
     
     // Route to existing NVerify pages which handle the actual secure lookups
-    navigate(`/verify/${verifyType}/${encodeURIComponent(verifyId.trim())}`);
+    if (verifyType === "letter") {
+      navigate(`/verify-letter/${encodeURIComponent(verifyId.trim())}`);
+    } else {
+      navigate(`/verify/${verifyType}/${encodeURIComponent(verifyId.trim())}`);
+    }
   };
 
   return (
@@ -33,7 +37,7 @@ export default function VerifyGateway() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
           <form onSubmit={handleVerify} className="space-y-6">
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <button type="button" onClick={() => setVerifyType('staff')} className={`p-4 rounded-xl border text-center transition ${verifyType === 'staff' ? 'border-[#E50914] bg-red-50 dark:bg-red-900/20 text-[#E50914]' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-600 dark:text-gray-400'}`}>
                 <UserCheck className="mx-auto h-6 w-6 mb-2" />
                 <span className="text-sm font-medium">Staff ID</span>
@@ -47,6 +51,11 @@ export default function VerifyGateway() {
               <button type="button" onClick={() => setVerifyType('invoice')} className={`p-4 rounded-xl border text-center transition ${verifyType === 'invoice' ? 'border-[#E50914] bg-red-50 dark:bg-red-900/20 text-[#E50914]' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-600 dark:text-gray-400'}`}>
                 <FileText className="mx-auto h-6 w-6 mb-2" />
                 <span className="text-sm font-medium">Invoice</span>
+              </button>
+
+              <button type="button" onClick={() => setVerifyType('letter')} className={`p-4 rounded-xl border text-center transition ${verifyType === 'letter' ? 'border-[#E50914] bg-red-50 dark:bg-red-900/20 text-[#E50914]' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-600 dark:text-gray-400'}`}>
+                <FileText className="mx-auto h-6 w-6 mb-2 text-red-500" />
+                <span className="text-sm font-medium">SIWES Letter</span>
               </button>
 
               <button type="button" onClick={() => setVerifyType('receipt')} className={`p-4 rounded-xl border text-center transition ${verifyType === 'receipt' ? 'border-[#E50914] bg-red-50 dark:bg-red-900/20 text-[#E50914]' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-600 dark:text-gray-400'}`}>
