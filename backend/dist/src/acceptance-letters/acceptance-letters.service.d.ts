@@ -8,6 +8,7 @@ export declare class AcceptanceLettersService {
     private whatsappService;
     private emailsService;
     constructor(prisma: PrismaService, documentsService: DocumentsService, whatsappService: WhatsappService, emailsService: EmailsService);
+    private getAssetsDir;
     private getLetterheadBase64;
     private getSignatorySignature;
     create(data: any, user: any): Promise<{

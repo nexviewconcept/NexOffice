@@ -107,10 +107,12 @@ export class DocumentsService implements OnModuleDestroy {
     try {
       const browser = await this.getBrowser();
       page = await browser.newPage();
-      await page.setContent(htmlContent, { waitUntil: 'domcontentloaded', timeout: 15000 });
+      await page.setContent(htmlContent, { waitUntil: ['domcontentloaded', 'networkidle0'], timeout: 20000 });
+      try { await page.evaluateHandle('document.fonts.ready'); } catch(e) {}
       const pdfBuffer = await page.pdf({
         format: 'A4',
         printBackground: true,
+        preferCSSPageSize: true,
         ...options,
       });
       return Buffer.from(pdfBuffer);

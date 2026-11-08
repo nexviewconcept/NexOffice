@@ -15,32 +15,74 @@ export class AcceptanceLettersService {
     private emailsService: EmailsService,
   ) {}
 
-  private getLetterheadBase64(): string {
-    const primary = path.join(__dirname, '..', '..', 'assets', 'letterhead.jpg');
-    if (fs.existsSync(primary)) {
-      return `data:image/jpeg;base64,${fs.readFileSync(primary).toString('base64')}`;
+  private getAssetsDir(): string {
+    const candidates = [
+      path.join(__dirname, '..', '..', '..', 'assets'), // compiled /app/dist/src/acceptance-letters -> /app/assets
+      path.join(__dirname, '..', '..', 'assets'),       // ts-node /app/src/acceptance-letters -> /app/assets
+      path.join(process.cwd(), 'assets'),               // /app/assets
+      path.join(process.cwd(), 'backend', 'assets'),    // monorepo root
+      'D:\\NexPortal\\NexOffice\\backend\\assets',
+      'D:\\NEXVIEW',
+    ];
+    for (const c of candidates) {
+      if (fs.existsSync(c)) {
+        return c;
+      }
     }
-    const fallback = 'D:\\NEXVIEW\\LH NEXVIEW CONCEPT.jpg.jpeg';
-    if (fs.existsSync(fallback)) {
-      return `data:image/jpeg;base64,${fs.readFileSync(fallback).toString('base64')}`;
+    return path.join(process.cwd(), 'assets');
+  }
+
+  private getLetterheadBase64(): string {
+    const assetsDir = this.getAssetsDir();
+    const candidates = [
+      path.join(assetsDir, 'letterhead.jpg'),
+      path.join(assetsDir, 'LH NEXVIEW CONCEPT.jpg.jpeg'),
+      path.join(process.cwd(), 'assets', 'letterhead.jpg'),
+      path.join(__dirname, '..', '..', '..', 'assets', 'letterhead.jpg'),
+      'D:\\NexPortal\\NexOffice\\backend\\assets\\letterhead.jpg',
+      'D:\\NEXVIEW\\LH NEXVIEW CONCEPT.jpg.jpeg',
+    ];
+    for (const file of candidates) {
+      if (fs.existsSync(file)) {
+        try {
+          return `data:image/jpeg;base64,${fs.readFileSync(file).toString('base64')}`;
+        } catch (e) {
+          console.error('Error reading letterhead file:', file, e);
+        }
+      }
     }
     return '';
   }
 
   private getSignatorySignature(name: string): string {
-    const assetsDir = path.join(__dirname, '..', '..', 'assets');
+    const assetsDir = this.getAssetsDir();
     const n = (name || '').toLowerCase();
     let file = '';
-    if (n.includes('aminu')) {
-      file = fs.existsSync(path.join(assetsDir, 'md_sign.jpg')) ? 'md_sign.jpg' : (fs.existsSync(path.join(assetsDir, 'md_sign.png')) ? 'md_sign.png' : '');
-    } else if (n.includes('isiyaku')) {
+
+    if (n.includes('faiza') || n.includes('coo')) {
+      file = fs.existsSync(path.join(assetsDir, 'coo_sign.png')) 
+        ? 'coo_sign.png' 
+        : (fs.existsSync(path.join(assetsDir, 'coo_sign.svg')) ? 'coo_sign.svg' : '');
+    } else if (n.includes('aminu') || n.includes('md')) {
+      file = fs.existsSync(path.join(assetsDir, 'md_sign.jpg')) 
+        ? 'md_sign.jpg' 
+        : (fs.existsSync(path.join(assetsDir, 'md_sign.png')) ? 'md_sign.png' : '');
+    } else if (n.includes('isiyaku') || n.includes('cto')) {
       file = fs.existsSync(path.join(assetsDir, 'cto_sign.jpg')) ? 'cto_sign.jpg' : '';
-    } else if (n.includes('muhammad')) {
+    } else if (n.includes('muhammad') || n.includes('cmo')) {
       file = fs.existsSync(path.join(assetsDir, 'cmo_sign.jpg')) ? 'cmo_sign.jpg' : '';
     }
+
+    // Fallback: if not matched, check coo_sign.png as standard COO default
+    if (!file && fs.existsSync(path.join(assetsDir, 'coo_sign.png'))) {
+      file = 'coo_sign.png';
+    }
+
     if (file) {
-      const ext = path.extname(file).replace('.', '') || 'jpeg';
-      return `data:image/${ext === 'jpg' ? 'jpeg' : ext};base64,${fs.readFileSync(path.join(assetsDir, file)).toString('base64')}`;
+      const fullPath = path.join(assetsDir, file);
+      const ext = path.extname(file).replace('.', '').toLowerCase();
+      const mime = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : (ext === 'svg' ? 'image/svg+xml' : 'image/png');
+      return `data:${mime};base64,${fs.readFileSync(fullPath).toString('base64')}`;
     }
     return '';
   }
@@ -138,75 +180,87 @@ export class AcceptanceLettersService {
           font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
           color: #111;
           position: relative;
+          overflow: hidden;
         }
         .content {
-          padding: 130px 65px 110px 65px;
-          font-size: 14px;
-          line-height: 1.6;
+          padding: 38mm 20mm 28mm 20mm;
+          font-size: 13.5px;
+          line-height: 1.5;
+          height: 297mm;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .top-body {
+          flex: 1;
         }
         .date {
           text-align: right;
-          font-size: 14px;
-          margin-bottom: 25px;
+          font-size: 13.5px;
+          margin-bottom: 20px;
           font-weight: 500;
+          color: #222;
         }
         .recipient {
-          font-size: 14px;
-          line-height: 1.5;
-          margin-bottom: 30px;
+          font-size: 13.5px;
+          line-height: 1.45;
+          margin-bottom: 22px;
           white-space: pre-line;
           color: #111;
         }
         .subject {
           text-align: center;
-          font-size: 15px;
+          font-size: 14.5px;
           font-weight: 800;
           text-decoration: underline;
           text-transform: uppercase;
-          margin-bottom: 25px;
+          margin-bottom: 20px;
           letter-spacing: 0.3px;
+          color: #000;
         }
         .body-p {
           text-align: justify;
-          margin-bottom: 18px;
-          line-height: 1.6;
+          margin-bottom: 14px;
+          line-height: 1.55;
         }
         .placement-list {
-          margin: 15px 0 20px 0;
+          margin: 10px 0 14px 0;
           padding-left: 20px;
           list-style-type: disc;
         }
         .placement-list li {
-          margin-bottom: 6px;
-          line-height: 1.5;
+          margin-bottom: 5px;
+          line-height: 1.45;
         }
         .placement-list strong {
           font-weight: 700;
         }
         .bottom-section {
-          margin-top: 35px;
+          margin-bottom: 5mm;
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
         }
         .signatory {
-          font-size: 14px;
-          line-height: 1.4;
+          font-size: 13.5px;
+          line-height: 1.35;
         }
         .signatory .yours {
-          margin-bottom: 15px;
+          margin-bottom: 6px;
         }
         .signatory img {
-          max-height: 45px;
-          max-width: 150px;
+          height: 48px;
+          max-width: 160px;
           display: block;
-          margin-bottom: 8px;
+          margin-bottom: 6px;
+          object-fit: contain;
         }
         .signatory .space {
-          height: 35px;
+          height: 48px;
         }
         .signatory .name {
           font-weight: 700;
+          color: #111;
         }
         .signatory .title {
           color: #333;
@@ -215,44 +269,46 @@ export class AcceptanceLettersService {
           text-align: center;
         }
         .qr-code {
-          width: 85px;
-          height: 85px;
+          width: 82px;
+          height: 82px;
           display: inline-block;
         }
         .qr-text {
-          font-size: 9px;
-          color: #666;
-          margin-top: 4px;
-          line-height: 1.3;
+          font-size: 8.5px;
+          color: #555;
+          margin-top: 3px;
+          line-height: 1.25;
         }
       </style>
     </head>
     <body>
       <div class="content">
-        <div class="date">${formattedDate}</div>
+        <div class="top-body">
+          <div class="date">${formattedDate}</div>
 
-        <div class="recipient">${letter.recipientAddress}</div>
+          <div class="recipient">${letter.recipientAddress}</div>
 
-        <div class="subject">LETTER OF ACCEPTANCE FOR INDUSTRIAL TRAINING (SIWES)</div>
+          <div class="subject">LETTER OF ACCEPTANCE FOR INDUSTRIAL TRAINING (SIWES)</div>
 
-        <div class="body-p">
-          We write to officially confirm that <strong>${letter.studentName}</strong>, a student of your institution, has been accepted to undergo ${hisHer} Students Industrial Work Experience Scheme (SIWES) at Nexview Concept Limited.
-        </div>
+          <div class="body-p">
+            We write to officially confirm that <strong>${letter.studentName}</strong>, a student of your institution, has been accepted to undergo ${hisHer} Students Industrial Work Experience Scheme (SIWES) at Nexview Concept Limited.
+          </div>
 
-        <div class="body-p" style="margin-bottom: 5px;">Below are ${hisHer} placement details:</div>
-        <ul class="placement-list">
-          <li>Student Name: <strong>${letter.studentName}</strong></li>
-          <li>Department: <strong>${letter.department}</strong></li>
-          <li>Matriculation Number: <strong>${letter.matricNumber}</strong></li>
-          <li>Duration: ${durationText.startsWith('From') || durationText.startsWith('from') ? durationText : `From ${durationText}`}</li>
-        </ul>
+          <div class="body-p" style="margin-bottom: 4px;">Below are ${hisHer} placement details:</div>
+          <ul class="placement-list">
+            <li>Student Name: <strong>${letter.studentName}</strong></li>
+            <li>Department: <strong>${letter.department}</strong></li>
+            <li>Matriculation Number: <strong>${letter.matricNumber}</strong></li>
+            <li>Duration: ${durationText.startsWith('From') || durationText.startsWith('from') ? durationText : `From ${durationText}`}</li>
+          </ul>
 
-        <div class="body-p">
-          During ${hisHer} internship, ${heShe} will be attached to our operational teams to gain practical, hands-on experience relevant to ${hisHer} field of study. We expect ${himHer} to adhere strictly to our corporate rules, professional ethics, and working hours throughout ${hisHer} stay.
-        </div>
+          <div class="body-p">
+            During ${hisHer} internship, ${heShe} will be attached to our operational teams to gain practical, hands-on experience relevant to ${hisHer} field of study. We expect ${himHer} to adhere strictly to our corporate rules, professional ethics, and working hours throughout ${hisHer} stay.
+          </div>
 
-        <div class="body-p">
-          Thank you for partnering with us to build the capacity of future professionals.
+          <div class="body-p">
+            Thank you for partnering with us to build the capacity of future professionals.
+          </div>
         </div>
 
         <div class="bottom-section">
@@ -273,7 +329,7 @@ export class AcceptanceLettersService {
     </html>
     `;
 
-    return this.documentsService.generatePdf(htmlContent);
+    return this.documentsService.generatePdf(htmlContent, { preferCSSPageSize: true });
   }
 
   async sendEmail(id: string, email: string) {
