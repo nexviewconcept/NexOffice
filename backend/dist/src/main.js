@@ -83,6 +83,9 @@ async function bootstrap() {
     app.useStaticAssets((0, path_1.join)(__dirname, '..', 'uploads'), {
         prefix: '/uploads/',
     });
+    const express = require('express');
+    app.use(express.json({ limit: '60mb' }));
+    app.use(express.urlencoded({ limit: '60mb', extended: true }));
     app.enableCors();
     await seedSuperAdmin(app);
     await app.listen(process.env.PORT ?? 3000);

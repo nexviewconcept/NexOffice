@@ -23,5 +23,5 @@ export declare class DocumentsController {
         content: string;
         dateIssued: Date;
     }>;
-    compressPdfFile(file: Express.Multer.File, res: Response): Promise<void>;
+    compressPdfFile(file: Express.Multer.File, level: string, res: Response): Promise<void>;
 }

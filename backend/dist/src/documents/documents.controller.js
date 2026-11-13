@@ -48,15 +48,18 @@ let DocumentsController = class DocumentsController {
     async verifyDocument(id) {
         return this.documentsService.verifyDocument(id);
     }
-    async compressPdfFile(file, res) {
+    async compressPdfFile(file, level, res) {
         if (!file) {
             throw new common_1.BadRequestException('No file uploaded');
         }
-        const compressedBuffer = await this.documentsService.compressPdf(file.buffer);
+        const compressedBuffer = await this.documentsService.compressPdf(file.buffer, level || 'recommended');
         res.set({
             'Content-Type': 'application/pdf',
             'Content-Disposition': 'attachment; filename=compressed_' + file.originalname,
-            'Content-Length': compressedBuffer.length,
+            'Content-Length': compressedBuffer.length.toString(),
+            'X-Original-Size': file.size.toString(),
+            'X-Compressed-Size': compressedBuffer.length.toString(),
+            'Access-Control-Expose-Headers': 'Content-Disposition, Content-Length, X-Original-Size, X-Compressed-Size',
         });
         res.end(compressedBuffer);
     }
@@ -98,13 +101,16 @@ __decorate([
 ], DocumentsController.prototype, "verifyDocument", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'MANAGER', 'OPERATOR'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR'),
     (0, common_1.Post)('documents/compress'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        limits: { fileSize: 60 * 1024 * 1024 },
+    })),
     __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Res)()),
+    __param(1, (0, common_1.Body)('level')),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", Promise)
 ], DocumentsController.prototype, "compressPdfFile", null);
 exports.DocumentsController = DocumentsController = __decorate([

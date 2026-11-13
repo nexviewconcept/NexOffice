@@ -404,26 +404,67 @@ export class DocumentsService implements OnModuleDestroy {
     return doc;
   }
 
-  async compressPdf(buffer: Buffer): Promise<Buffer> {
+  async compressPdf(buffer: Buffer, level: string = 'recommended'): Promise<Buffer> {
     const { exec } = require('child_process');
     const util = require('util');
     const execAsync = util.promisify(exec);
     const os = require('os');
     const path = require('path');
 
-    const inputPath = path.join(os.tmpdir(), `input_${Date.now()}.pdf`);
-    const outputPath = path.join(os.tmpdir(), `output_${Date.now()}.pdf`);
+    const inputPath = path.join(os.tmpdir(), `input_${Date.now()}_${Math.random().toString(36).substring(7)}.pdf`);
+    const outputPath = path.join(os.tmpdir(), `output_${Date.now()}_${Math.random().toString(36).substring(7)}.pdf`);
 
     fs.writeFileSync(inputPath, buffer);
 
+    // Formulate Ghostscript arguments according to desired compression strategy
+    let gsArgs = '-sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH';
+
+    if (level === 'extreme') {
+      // Aggressive downsampling to 60 DPI and forced JPEG re-encoding for already-compressed PDFs
+      gsArgs = '-sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dQUIET -dBATCH ' +
+        '-dDownsampleColorImages=true -dColorImageResolution=60 -dColorImageDownsampleThreshold=1.0 ' +
+        '-dAutoFilterColorImages=false -dColorImageFilter=/DCTEncode ' +
+        '-dDownsampleGrayImages=true -dGrayImageResolution=60 -dGrayImageDownsampleThreshold=1.0 ' +
+        '-dDownsampleMonoImages=true -dMonoImageResolution=120 -dMonoImageDownsampleThreshold=1.0 ' +
+        '-dDoThumbnails=false -dCreateJBig2Streams=true';
+    } else if (level === 'grayscale') {
+      // Convert all pages & graphics to grayscale (removes 50-70% size while keeping crisp text)
+      gsArgs = '-sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen ' +
+        '-sColorConversionStrategy=Gray -dProcessColorModel=/DeviceGray -dNOPAUSE -dQUIET -dBATCH';
+    } else if (level === 'extreme_grayscale') {
+      // Ultra compression: Grayscale + aggressive downsample to 60 DPI
+      gsArgs = '-sDEVICE=pdfwrite -dCompatibilityLevel=1.4 ' +
+        '-sColorConversionStrategy=Gray -dProcessColorModel=/DeviceGray -dNOPAUSE -dQUIET -dBATCH ' +
+        '-dDownsampleColorImages=true -dColorImageResolution=60 -dColorImageDownsampleThreshold=1.0 ' +
+        '-dDownsampleGrayImages=true -dGrayImageResolution=60 -dGrayImageDownsampleThreshold=1.0 ' +
+        '-dDownsampleMonoImages=true -dMonoImageResolution=120 -dMonoImageDownsampleThreshold=1.0 ' +
+        '-dDoThumbnails=false -dCreateJBig2Streams=true';
+    }
+
     try {
-      // PDFSETTINGS: /screen (low quality, small size), /ebook (medium), /printer (high), /prepress (highest)
-      await execAsync(`gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile=${outputPath} ${inputPath}`);
-      const compressedBuffer = fs.readFileSync(outputPath);
-      return compressedBuffer;
-    } catch (err) {
-      console.error('Ghostscript compression failed:', err);
-      throw new InternalServerErrorException('Failed to compress PDF');
+      await execAsync(`gs ${gsArgs} -sOutputFile="${outputPath}" "${inputPath}"`);
+      if (fs.existsSync(outputPath)) {
+        const compressedBuffer = fs.readFileSync(outputPath);
+        if (compressedBuffer.length > 0) {
+          return compressedBuffer;
+        }
+      }
+      return buffer;
+    } catch (err: any) {
+      console.error('Ghostscript compression failed with args:', gsArgs, err?.message || err);
+      // Fallback to standard screen if custom mode threw an error
+      if (level !== 'recommended') {
+        try {
+          await execAsync(`gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/screen -dNOPAUSE -dQUIET -dBATCH -sOutputFile="${outputPath}" "${inputPath}"`);
+          if (fs.existsSync(outputPath)) {
+            const fallbackBuf = fs.readFileSync(outputPath);
+            if (fallbackBuf.length > 0) return fallbackBuf;
+          }
+        } catch (fallbackErr) {
+          console.error('Fallback Ghostscript compression also failed:', fallbackErr);
+        }
+      }
+      throw new InternalServerErrorException('Failed to compress PDF. The file may be password-protected or corrupted.');
     } finally {
       try {
         if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);

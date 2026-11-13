@@ -49,18 +49,27 @@ export class DocumentsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPER_ADMIN', 'DIRECTOR', 'MANAGER', 'OPERATOR')
+  @Roles('SUPER_ADMIN', 'DIRECTOR', 'ADMIN', 'MANAGER', 'HR', 'OPERATOR')
   @Post('documents/compress')
-  @UseInterceptors(FileInterceptor('file'))
-  async compressPdfFile(@UploadedFile() file: Express.Multer.File, @Res() res: Response) {
+  @UseInterceptors(FileInterceptor('file', {
+    limits: { fileSize: 60 * 1024 * 1024 }, // 60MB max
+  }))
+  async compressPdfFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('level') level: string,
+    @Res() res: Response
+  ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
-    const compressedBuffer = await this.documentsService.compressPdf(file.buffer);
+    const compressedBuffer = await this.documentsService.compressPdf(file.buffer, level || 'recommended');
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=compressed_' + file.originalname,
-      'Content-Length': compressedBuffer.length,
+      'Content-Length': compressedBuffer.length.toString(),
+      'X-Original-Size': file.size.toString(),
+      'X-Compressed-Size': compressedBuffer.length.toString(),
+      'Access-Control-Expose-Headers': 'Content-Disposition, Content-Length, X-Original-Size, X-Compressed-Size',
     });
     res.end(compressedBuffer);
   }

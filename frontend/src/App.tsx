@@ -145,6 +145,12 @@ export default function App() {
             <Route path="notifications" element={<Notifications />} />
             <Route path="support-tickets" element={<SupportTickets />} />
             <Route path="service-logs" element={<ServiceLogs />} />
+            <Route path="documents-editor" element={<DocumentsEditor />} />
+            <Route path="converter" element={<JpgToPdf />} />
+            <Route path="merge-pdf" element={<MergePdf />} />
+            <Route path="pdf-to-image" element={<PdfToImage />} />
+            <Route path="pdf-compressor" element={<PdfCompressor />} />
+            <Route path="letter-creator" element={<LetterCreator />} />
           </Route>
         </Route>
 

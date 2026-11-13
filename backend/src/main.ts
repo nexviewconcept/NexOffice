@@ -56,6 +56,10 @@ async function bootstrap() {
     prefix: '/uploads/',
   });
   
+  const express = require('express');
+  app.use(express.json({ limit: '60mb' }));
+  app.use(express.urlencoded({ limit: '60mb', extended: true }));
+
   app.enableCors();
 
   await seedSuperAdmin(app);

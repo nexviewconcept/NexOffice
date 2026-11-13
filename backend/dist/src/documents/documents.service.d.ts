@@ -32,5 +32,5 @@ export declare class DocumentsService implements OnModuleDestroy {
         content: string;
         dateIssued: Date;
     }>;
-    compressPdf(buffer: Buffer): Promise<Buffer>;
+    compressPdf(buffer: Buffer, level?: string): Promise<Buffer>;
 }
